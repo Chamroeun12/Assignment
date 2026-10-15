@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-green: #34d399;
+            --accent-purple: #a855f7;
+            --badge-bg: #0369a1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 860px;
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .meta-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .badge {
+            background-color: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: var(--accent-blue);
+            padding: 0.4rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .badge.node {
+            background-color: rgba(52, 211, 153, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.35);
+            color: var(--accent-green);
+        }
+
+        .pipeline-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pipeline-flow {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .flow-step {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .flow-step:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-blue);
+        }
+
+        .flow-number {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent-blue);
+            margin-bottom: 0.25rem;
+            font-weight: 700;
+        }
+
+        .flow-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #ffffff;
+        }
+
+        .pipeline-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .detail-item {
+            background: rgba(15, 23, 42, 0.4);
+            border-left: 3px solid var(--accent-blue);
+            padding: 0.85rem 1.25rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .detail-item h3 {
+            font-size: 0.95rem;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-item p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--card-border);
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>{{ title }}</h1>
+            <p style="color: var(--text-secondary);">Automated CI/CD Pipeline on AWS</p>
+            <div class="meta-badges">
+                <span class="badge" id="app-version">Version: {{ version }}</span>
+                <span class="badge node" id="app-hostname">Host: {{ hostname }}</span>
+            </div>
+        </header>
+
+        <section class="pipeline-section">
+            <h2 class="section-title">Automated CI/CD Pipeline Architecture</h2>
+            
+            <div class="pipeline-flow">
+                <div class="flow-step">
+                    <div class="flow-number">Step 1</div>
+                    <div class="flow-name">GitHub</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-number">Step 2</div>
+                    <div class="flow-name">Jenkins</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-number">Step 3</div>
+                    <div class="flow-name">Docker</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-number">Step 4</div>
+                    <div class="flow-name">Amazon ECR</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-number">Step 5</div>
+                    <div class="flow-name">Docker Swarm</div>
+                </div>
+            </div>
+
+            <div class="pipeline-details">
+                <div class="detail-item" style="border-left-color: #38bdf8;">
+                    <h3>1. GitHub (Version Control & Webhook)</h3>
+                    <p>Developers push code changes to GitHub. An automated webhook immediately notifies Jenkins of incoming commits.</p>
+                </div>
+                <div class="detail-item" style="border-left-color: #818cf8;">
+                    <h3>2. Jenkins (CI/CD Automation Engine)</h3>
+                    <p>Jenkins automatically checks out code, runs automated tests, builds the container image, and handles authentication.</p>
+                </div>
+                <div class="detail-item" style="border-left-color: #a855f7;">
+                    <h3>3. Docker (Containerization)</h3>
+                    <p>Docker packages the application into a lightweight, isolated image tagged with the traceable build number or commit SHA.</p>
+                </div>
+                <div class="detail-item" style="border-left-color: #f43f5e;">
+                    <h3>4. Amazon ECR (Private Container Registry)</h3>
+                    <p>The tagged Docker image is authenticated and securely pushed to private Amazon Elastic Container Registry (ECR).</p>
+                </div>
+                <div class="detail-item" style="border-left-color: #34d399;">
+                    <h3>5. Docker Swarm on EC2 (Container Orchestration)</h3>
+                    <p>Docker Swarm pulls the new image from ECR and executes a zero-downtime rolling update across the manager and worker EC2 nodes.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            Cloud Computing &bull; Homework 2 &bull; CI/CD with Jenkins, GitHub, Docker &amp; Docker Swarm on AWS
+        </footer>
+    </div>
+</body>
+</html>

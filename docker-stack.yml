@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  cicd-homework2:
+    image: 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2:${IMAGE_TAG:-latest}
+    ports:
+      - target: 5000
+        published: 5000
+        protocol: tcp
+        mode: ingress
+    environment:
+      - APP_VERSION=${IMAGE_TAG:-1.0.0}
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+        failure_action: rollback
+        monitor: 15s
+        max_failure_ratio: 0.2
+      rollback_config:
+        parallelism: 1
+        delay: 5s
+        order: stop-first
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://127.0.0.1:5000/health\")' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - swarm-network
+
+networks:
+  swarm-network:
+    driver: overlay
+    attachable: true
