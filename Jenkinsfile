@@ -6,8 +6,8 @@ pipeline {
         AWS_REGION     = 'ap-southeast-2'
         ECR_REPO       = 'cicd-homework2'
         ECR_REGISTRY   = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-        IMAGE_TAG      = "${BUILD_NUMBER}-${GIT_COMMIT.take(7)}"
         STACK_NAME     = 'cicd-homework2'
+        IMAGE_TAG      = "${BUILD_NUMBER}"
     }
 
     triggers {
@@ -27,6 +27,10 @@ pipeline {
             steps {
                 echo "==> [Stage 1] Checking out source code from GitHub repository..."
                 checkout scm
+                script {
+                    def shortCommit = env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : (sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim() ?: 'unknown')
+                    env.IMAGE_TAG = "${env.BUILD_NUMBER}-${shortCommit}"
+                }
                 sh '''
                     echo "Commit: ${GIT_COMMIT}"
                     echo "Branch: ${GIT_BRANCH}"
@@ -71,21 +75,21 @@ pipeline {
                     if (env.SWARM_MANAGER_IP) {
                         echo "Deploying remotely to Swarm Manager at ${SWARM_MANAGER_IP} via SSH..."
                         sshagent(credentials: ['swarm-manager-ssh-key']) {
-                            sh '''
-                                scp -o StrictHostKeyChecking=no docker-stack.yml ubuntu@${SWARM_MANAGER_IP}:~/docker-stack.yml
-                                ssh -o StrictHostKeyChecking=no ubuntu@${SWARM_MANAGER_IP} "
+                            sh """
+                                scp -o StrictHostKeyChecking=no docker-stack.yml ubuntu@\${SWARM_MANAGER_IP}:~/docker-stack.yml
+                                ssh -o StrictHostKeyChecking=no ubuntu@\${SWARM_MANAGER_IP} "
                                     aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
-                                    export IMAGE_TAG=${IMAGE_TAG}
+                                    export IMAGE_TAG=${env.IMAGE_TAG}
                                     docker stack deploy --with-registry-auth -c ~/docker-stack.yml ${STACK_NAME}
                                 "
-                            '''
+                            """
                         }
                     } else {
                         echo "Deploying directly to local Docker Swarm node..."
-                        sh '''
-                            export IMAGE_TAG=${IMAGE_TAG}
+                        sh """
+                            export IMAGE_TAG=${env.IMAGE_TAG}
                             docker stack deploy --with-registry-auth -c docker-stack.yml ${STACK_NAME}
-                        '''
+                        """
                     }
                 }
             }
@@ -97,8 +101,8 @@ pipeline {
                 script {
                     if (env.SWARM_MANAGER_IP) {
                         sshagent(credentials: ['swarm-manager-ssh-key']) {
-                            sh '''
-                                ssh -o StrictHostKeyChecking=no ubuntu@${SWARM_MANAGER_IP} "
+                            sh """
+                                ssh -o StrictHostKeyChecking=no ubuntu@\${SWARM_MANAGER_IP} "
                                     echo '--- Docker Swarm Nodes ---'
                                     docker node ls
                                     echo '--- Docker Swarm Services ---'
@@ -106,17 +110,17 @@ pipeline {
                                     echo '--- Tasks for Service ${STACK_NAME}_cicd-homework2 ---'
                                     docker service ps ${STACK_NAME}_cicd-homework2
                                 "
-                            '''
+                            """
                         }
                     } else {
-                        sh '''
+                        sh """
                             echo "--- Docker Swarm Nodes ---"
                             docker node ls || true
                             echo "--- Docker Swarm Services ---"
                             docker service ls || true
                             echo "--- Tasks for Service ${STACK_NAME}_cicd-homework2 ---"
                             docker service ps ${STACK_NAME}_cicd-homework2 || true
-                        '''
+                        """
                     }
                 }
             }

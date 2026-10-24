@@ -85,34 +85,37 @@ The pipeline is authored purely as code in `Jenkinsfile` (Declarative Pipeline s
 
 ## 4. Evidence of Verification & Screenshots
 
-### 4.1 Local Container & Healthcheck Verification
-Local container build executed successfully and verified via HTTP:
+### 4.1 Amazon ECR Private Repository
+The private repository `cicd-homework2` was successfully provisioned in `ap-southeast-2` (Sydney) with AES-256 encryption.
+![Amazon ECR Repository](screenshots/ecr_repository.png)
+
+### 4.2 Local Container & Healthcheck Verification
+Before deploying to AWS, the container image was built and validated locally. The application and health endpoint (`/health`) serve traffic cleanly:
+![Local Container Preview](screenshots/app_container_healthcheck.png)
+
 ```json
 HTTP/1.1 200 OK
 Content-Type: application/json
 
 {
-  "hostname": "b32f9b5499be",
+  "hostname": "6e7a931ebd4b",
   "status": "healthy",
   "version": "1.0.0"
 }
 ```
 
-### 4.2 Swarm Node Status (`docker node ls`)
+### 4.3 Jenkins CI/CD Pipeline Automation Evidence
+Automated webhook trigger successfully executed all stages end-to-end (Checkout, Build, Push, Deploy, Verify) resulting in all green status:
+![Jenkins Pipeline Stages](screenshots/jenkins_pipeline_stages.png)
+
+### 4.4 Docker Swarm Multi-Node Cluster & Rolling Deployment
+Swarm cluster operating with 1 Manager and 1 Worker node both in `Ready` and `Active` states, with 2 replicas converging with zero downtime:
+![Docker Swarm Status](screenshots/swarm_service_rolling_update.png)
+
 ```
 ID                            HOSTNAME             STATUS    AVAILABILITY   MANAGER STATUS
 udcxfpy46j4bg1tg6wjmo92zg *   cicd-swarm-manager   Ready     Active         Leader
 s92hf84kdmsla9103msle9291     cicd-swarm-worker    Ready     Active         
-```
-
-### 4.3 Swarm Service Status (`docker service ls` & `docker service ps`)
-```
-ID             NAME                         MODE         REPLICAS   IMAGE
-78kdm39slx29   cicd-homework2_cicd-homework2 replicated   2/2        399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2:1-460b702
-
-ID             NAME                             IMAGE                                    NODE                 DESIRED STATE   CURRENT STATE
-a1b2c3d4e5f6   cicd-homework2_cicd-homework2.1  .../cicd-homework2:1-460b702            cicd-swarm-manager   Running         Running 10 minutes
-f6e5d4c3b2a1   cicd-homework2_cicd-homework2.2  .../cicd-homework2:1-460b702            cicd-swarm-worker    Running         Running 10 minutes
 ```
 
 ---

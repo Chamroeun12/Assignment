@@ -67,6 +67,8 @@ python app.py
 - Open browser at `http://localhost:5000`
 - Check health status at `http://localhost:5000/health` (returns JSON `{"status": "healthy", ...}`)
 
+![Local Web App Interface](screenshots/app_local_preview.png)
+
 ### Step 3.2: Build & Test with Docker Locally
 ```bash
 # 1. Build Docker image
@@ -82,6 +84,8 @@ curl http://localhost:5005/health
 docker rm -f hw2-local
 ```
 
+![Container Running & Host Inspection](screenshots/app_container_healthcheck.png)
+
 ---
 
 ## 4. AWS Infrastructure Setup
@@ -93,6 +97,8 @@ docker rm -f hw2-local
    ```
    <AWS_ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2
    ```
+
+![Amazon ECR Private Repository](screenshots/ecr_repository.png)
 
 ### 4.2 Amazon EC2 Instances
 Launch two EC2 instances running **Ubuntu 22.04 LTS / 24.04 LTS** (e.g., `t3.micro` or `t3.small`):
@@ -168,6 +174,8 @@ Both nodes must show status **Ready**.
    - Content type: `application/json`
    - Events: `Just the push event`
 
+![Jenkins CI/CD Pipeline Stages](screenshots/jenkins_pipeline_stages.png)
+
 ---
 
 ## 7. Zero-Downtime Rolling Updates
@@ -212,6 +220,8 @@ curl http://<SWARM_PUBLIC_IP>:5000/health
 # 4. Observe rolling update during a live build
 watch -n 1 "docker service ps cicd-homework2_cicd-homework2"
 ```
+
+![Docker Swarm Cluster & Service Verification](screenshots/swarm_service_rolling_update.png)
 
 ---
 

@@ -51,4 +51,6 @@ Thumbs.db
 
 # Assignment PDF & Screenshots
 *.pdf
+!REPORT.pdf
 *.png
+!screenshots/*.png
