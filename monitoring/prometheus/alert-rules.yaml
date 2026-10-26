@@ -1,0 +1,41 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cicd-homework2-alerts
+  namespace: cicd-production
+  labels:
+    role: alert-rules
+    release: prometheus
+spec:
+  groups:
+    - name: cicd-homework2.rules
+      rules:
+        # Alert when any replica fails or pods are down
+        - alert: PodNotReady
+          expr: kube_deployment_status_replicas_available{deployment="cicd-homework2"} < 1
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "CICD Production Pods are unavailable"
+            description: "No available replicas detected for deployment cicd-homework2 for more than 1 minute."
+
+        # Alert on CrashLoopBackOff or rapid restarts
+        - alert: PodCrashLooping
+          expr: rate(kube_pod_container_status_restarts_total{container="web-app"}[5m]) * 60 > 2
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Container restarting frequently"
+            description: "web-app in {{ $labels.pod }} restarted more than 2 times in the last 5 minutes."
+
+        # Alert on elevated CPU consumption
+        - alert: HighCPUUsage
+          expr: sum(rate(container_cpu_usage_seconds_total{container="web-app"}[2m])) by (pod) > 0.20
+          for: 3m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU usage on web-app container"
+            description: "Pod {{ $labels.pod }} is exceeding 80% of its requested CPU."

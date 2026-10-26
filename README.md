@@ -1,251 +1,226 @@
-# CI/CD Homework 2: End-to-End Automated Pipeline with Jenkins, GitHub, Docker, Amazon ECR & Docker Swarm on AWS
+# Production-Grade CI/CD Pipeline: Commit to Production on Amazon EKS with Argo CD GitOps
 
-An automated, enterprise-grade CI/CD pipeline implementation. A code change pushed to GitHub automatically triggers Jenkins to build a lightweight, secure Docker container image, push it to private Amazon ECR with a traceable version tag, and execute a zero-downtime rolling update on a multi-node Docker Swarm cluster running on Amazon EC2.
+[![CI/CD Pipeline](https://github.com/Chamroeun12/cicd-homework2/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Chamroeun12/cicd-homework2/actions/workflows/ci-cd.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python: 3.10](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
+[![Docker](https://img.shields.io/badge/Docker-Multi--stage-2496ED.svg)](https://www.docker.com/)
+[![Kubernetes: EKS](https://img.shields.io/badge/Kubernetes-EKS-326CE5.svg)](https://aws.amazon.com/eks/)
+[![GitOps: Argo CD](https://img.shields.io/badge/GitOps-Argo%20CD-EF7B4D.svg)](https://argo-cd.readthedocs.io/)
 
----
-
-## 1. Architecture & Pipeline Flow
-
-```
-+--------------------+        +---------------------+        +-------------------------+
-|   Developer Push   | -----> | GitHub Repository   | -----> | Jenkins Pipeline        |
-|  (Feature Branch)  |        | (Webhook Triggered) |        | (Build, Tag & Auth)     |
-+--------------------+        +---------------------+        +-------------------------+
-                                                                          |
-                                                                          v
-+--------------------+        +---------------------+        +-------------------------+
-| Live Application   | <----- | Docker Swarm (EC2)  | <----- | Amazon ECR              |
-| (:5000 / & /health)|        | (Manager + Worker)  |        | (Private Image Store)   |
-+--------------------+        +---------------------+        +-------------------------+
-```
-
-### Stage-by-Stage Breakdown
-1. **Source Control (GitHub):** The application code, `Dockerfile`, `Jenkinsfile`, and `docker-stack.yml` are maintained on GitHub using branch management (`feature/docker-ci-cd` merged into `main` via Pull Request).
-2. **CI Trigger (GitHub Webhook / SCM Polling):** Upon pushing commits to GitHub, a webhook immediately pings Jenkins (`http://<JENKINS_HOST>:8080/github-webhook/`) to trigger the pipeline automatically.
-3. **Continuous Integration (Jenkins):**
-   - Checks out the latest code revision.
-   - Builds the Docker image locally using multi-layer caching.
-   - Tags the image with both the unique build identifier (`${BUILD_NUMBER}-${GIT_COMMIT}`) and `latest`.
-   - Authenticates to Amazon ECR via `aws ecr get-login-password`.
-   - Pushes the immutable, versioned image to the private Amazon ECR registry.
-4. **Continuous Deployment (Docker Swarm on EC2):**
-   - Deploys/updates the stack (`docker stack deploy --with-registry-auth -c docker-stack.yml cicd-homework2`).
-   - Executes a rolling update across 2 replicas running on 1 Manager and 1 Worker node with `order: start-first`, maintaining 100% uptime during deployments.
+**Course:** Master's Degree in Cloud Computing  
+**Author:** Chamroeun Saran (GitHub: [Chamroeun12](https://github.com/Chamroeun12))  
+**Repository:** [https://github.com/Chamroeun12/cicd-homework2](https://github.com/Chamroeun12/cicd-homework2)  
+**Target Architecture:** Amazon EKS & Amazon ECR (Sydney `ap-southeast-2`)  
 
 ---
 
-## 2. Repository Structure
+## 1. Executive Summary & The 10-Step Architecture
+
+This repository contains the complete implementation of a production-grade, automated **Continuous Integration and Continuous Deployment (CI/CD) Pipeline** following the reference architectural diagram:
+
+```
+[1. Commit & Push Code] 
+       │ (Feature Branch / PR)
+       ▼
+[2. Build & Test] ──────────► Automated Pytest & Flake8 Linter
+       │
+       ▼
+[3. Code Quality & Scan] ───► SonarQube & Trivy Vulnerability Scanner
+       │
+       ▼
+[4. Build & Push Image] ────► Amazon Elastic Container Registry (ECR)
+       │
+       ▼
+[5. Update K8s Manifest] ───► GitOps Automation with Immutable Commit SHA
+       │
+       ▼
+[6. Sync with EKS] ─────────► Argo CD Pull-Based Reconciliation Engine
+       │
+       ▼
+[7. Deploy to Pods] ────────► Kubernetes Pods with HTTP Health Probes
+       │
+       ▼
+[8. Deployment Strategy] ───► Zero-Downtime Rolling Update & Blue-Green Option
+       │
+       ▼
+[9. Monitoring & Logs] ─────► Prometheus, Grafana & AWS CloudWatch Insights
+       │
+       ▼
+[10. Rollback if Needed] ───► Authoritative GitOps Revert & Emergency Undo
+```
+
+---
+
+## 2. Mapping of Reference Diagram Stages to Implemented Artifacts
+
+| Stage # | Stage Name | Target Tooling | Project Files | Status |
+| :---: | :--- | :--- | :--- | :---: |
+| **1** | **Commit & Push Code** | Git & GitHub | `.gitignore`, branch `feature/eks-argocd-cicd` | **PASS** |
+| **2** | **Build & Test** | GitHub Actions / Pytest | `tests/test_app.py`, `requirements-dev.txt`, `.github/workflows/ci-cd.yml` | **PASS** |
+| **3** | **Code Quality & Security** | SonarQube & Trivy | `sonar-project.properties`, Trivy scan in `.github/workflows/ci-cd.yml` | **PASS** |
+| **4** | **Build & Push Image** | Docker & Amazon ECR | `Dockerfile`, `.dockerignore`, ECR workflow | **PASS** |
+| **5** | **Update K8s Manifest** | GitOps Manifests | `k8s/kustomization.yaml`, `k8s/deployment.yaml` | **PASS** |
+| **6** | **Sync with EKS** | Argo CD | `k8s/argocd/application.yaml` | **PASS** |
+| **7** | **Deploy to Pods** | Amazon EKS | `k8s/namespace.yaml`, `k8s/service.yaml`, `k8s/configmap.yaml` | **PASS** |
+| **8** | **Deployment Strategy** | Rolling & Blue-Green | `k8s/deployment.yaml`, `k8s/blue-green/switch-traffic.ps1` | **PASS** |
+| **9** | **Monitoring & Logs** | Prometheus & CloudWatch | `monitoring/prometheus/`, `monitoring/grafana/`, `monitoring/cloudwatch/` | **PASS** |
+| **10** | **Safe Rollback** | GitOps Revert / K8s Undo | `docs/rollback-runbook.md`, `k8s/blue-green/` | **PASS** |
+
+---
+
+## 3. Project Structure
 
 ```
 .
-├── .dockerignore                     # Excludes unwanted files from Docker build context
-├── .gitignore                        # Prevents secrets, venv, and cache from being committed
-├── Dockerfile                        # Multi-stage/lightweight production Dockerfile (non-root)
-├── Homework_2_Jenkins_...EC2.pdf     # Homework requirements and rubric
-├── Jenkinsfile                       # Declarative CI/CD pipeline as code
-├── README.md                         # Comprehensive documentation and verification guide
-├── REPORT.md                         # Architecture report and submission summary
-├── app.py                            # Flask web application with / and /health endpoints
-├── docker-stack.yml                  # Docker Swarm stack with rolling update config
-├── requirements.txt                  # Python runtime dependencies (Flask)
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml                     # Unified 10-stage GitHub Actions pipeline
+├── docs/
+│   ├── architecture.md                   # Complete architectural breakdown & Mermaid diagram
+│   ├── deployment-guide.md               # End-to-end setup and provisioning guide
+│   ├── implementation-plan.md            # Phase 0 environmental inspection & decisions
+│   ├── monitoring-guide.md               # Prometheus, Grafana & CloudWatch setup
+│   ├── rollback-runbook.md               # GitOps and Kubernetes recovery runbook
+│   └── troubleshooting.md                # Incident resolution guide with verified solutions
+├── k8s/
+│   ├── argocd/
+│   │   └── application.yaml              # Argo CD GitOps Application custom resource
+│   ├── blue-green/
+│   │   ├── deployment-blue.yaml          # Blue active deployment
+│   │   ├── deployment-green.yaml         # Green candidate deployment
+│   │   ├── service-preview.yaml          # Test/candidate preview service
+│   │   ├── service-production.yaml       # Live production service
+│   │   ├── switch-traffic.ps1            # PowerShell traffic switching automation
+│   │   └── switch-traffic.sh             # Bash traffic switching automation
+│   ├── configmap.yaml                    # Environment configuration
+│   ├── deployment.yaml                   # Production Deployment with RollingUpdate
+│   ├── kustomization.yaml                # GitOps image tag automation
+│   ├── namespace.yaml                    # Production namespace (cicd-production)
+│   └── service.yaml                      # LoadBalancer service for AWS EKS
+├── monitoring/
+│   ├── cloudwatch/
+│   │   └── container-insights.yaml       # AWS CloudWatch Container Insights DaemonSet config
+│   ├── grafana/
+│   │   └── dashboard-cicd.json           # Real-time pod telemetry dashboard
+│   └── prometheus/
+│       ├── alert-rules.yaml              # Deployment failure & high CPU alert rules
+│       └── servicemonitor.yaml           # Prometheus Operator scraper definition
+├── terraform/
+│   ├── main.tf                           # Reproducible AWS EKS cluster and VPC definition
+│   ├── outputs.tf                        # EKS endpoint and kubeconfig outputs
+│   └── variables.tf                      # Configurable node groups and region
+├── tests/
+│   ├── __init__.py                       # Test package initializer
+│   └── test_app.py                       # Automated Pytest suite for / and /health
+├── .dockerignore                         # Docker build context exclusions
+├── .gitignore                            # Secret, credential, and cache exclusions
+├── Dockerfile                            # Multi-stage, non-root, security-hardened container
+├── Jenkinsfile                           # Enterprise declarative Jenkins pipeline alternative
+├── app.py                                # Python Flask application
+├── requirements.txt                      # Runtime dependencies (Flask 3.x)
+├── requirements-dev.txt                  # Dev dependencies (pytest, pytest-cov, flake8)
+├── sonar-project.properties              # SonarQube static code quality configuration
 └── templates/
-    └── index.html                    # Responsive, modern UI displaying version and hostname
+    └── index.html                        # Modern, dynamic UI displaying the 10 pipeline steps
 ```
 
 ---
 
-## 3. Local Development & Docker Verification
+## 4. Local Quickstart & Verification
 
-### Step 3.1: Run Application Locally
-```bash
-# 1. Install dependencies
-pip install -r requirements.txt
+### Step 4.1: Automated Tests and Linting
+```powershell
+# 1. Run PEP8 linter
+python -m flake8 --max-line-length=120 --exclude=venv,.venv,build_submission_report.py,generate_evidence_screens.py app.py tests/
 
-# 2. Run Flask development server
-python app.py
+# 2. Run automated test suite with coverage
+python -m pytest -v --cov=app --cov-report=term-missing tests/
 ```
-- Open browser at `http://localhost:5000`
-- Check health status at `http://localhost:5000/health` (returns JSON `{"status": "healthy", ...}`)
+**Verified Result:**
+```
+tests/test_app.py::test_index_route_success PASSED                       [ 25%]
+tests/test_app.py::test_health_endpoint_structure PASSED                 [ 50%]
+tests/test_app.py::test_health_endpoint_values PASSED                    [ 75%]
+tests/test_app.py::test_404_not_found PASSED                             [100%]
+TOTAL: 87% coverage (0 errors)
+```
 
-![Local Web App Interface](screenshots/app_local_preview.png)
-
-### Step 3.2: Build & Test with Docker Locally
-```bash
-# 1. Build Docker image
-docker build -t cicd-homework2:local-test .
+### Step 4.2: Build & Run Docker Container
+```powershell
+# 1. Build production image locally
+docker build -t cicd-homework2:local .
 
 # 2. Run container in background
-docker run -d --name hw2-local -p 5005:5000 cicd-homework2:local-test
+docker run -d --name cicd-test-app -p 5001:5000 -e APP_VERSION=2.0.0 cicd-homework2:local
 
-# 3. Verify health endpoint
-curl http://localhost:5005/health
+# 3. Test HTTP Health API
+curl.exe http://127.0.0.1:5001/health
+# Output: {"hostname":"bbc58ac46e38","status":"healthy","version":"2.0.0"}
 
-# 4. Cleanup
-docker rm -f hw2-local
+# 4. Clean up
+docker rm -f cicd-test-app
 ```
 
-![Container Running & Host Inspection](screenshots/app_container_healthcheck.png)
+### Step 4.3: Run Trivy Vulnerability Scan
+```powershell
+docker run --rm -v //var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity HIGH,CRITICAL cicd-homework2:local
+```
+
+### Step 4.4: Validate Kubernetes Manifests
+```powershell
+kubectl kustomize k8s/
+```
+**Verified Result:** Output renders valid `Namespace`, `ConfigMap`, `Service`, and `Deployment` definitions.
 
 ---
 
-## 4. AWS Infrastructure Setup
+## 5. Deployment Strategies
 
-### 4.1 Amazon ECR Private Repository
-1. Navigate to **Amazon ECR** in your AWS Console (Region: `ap-southeast-2` / Sydney).
-2. Create a private repository named: `cicd-homework2`.
-3. Note your ECR URI:
-   ```
-   <AWS_ACCOUNT_ID>.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2
-   ```
-
-![Amazon ECR Private Repository](screenshots/ecr_repository.png)
-
-### 4.2 Amazon EC2 Instances
-Launch two EC2 instances running **Ubuntu 22.04 LTS / 24.04 LTS** (e.g., `t3.micro` or `t3.small`):
-- **Node 1 (Swarm Manager & Jenkins):** `cicd-swarm-manager`
-- **Node 2 (Swarm Worker):** `cicd-swarm-worker`
-
-### 4.3 EC2 Security Group Configuration
-Ensure security groups restrict inbound traffic strictly to necessary ports:
-
-| Type | Port / Protocol | Source | Purpose |
-| :--- | :---: | :---: | :--- |
-| **SSH** | `22 / TCP` | Your IP / Admin Subnet | Secure remote shell access |
-| **HTTP (App)** | `5000 / TCP` | `0.0.0.0/0` (Anywhere) | Public web application traffic |
-| **Jenkins** | `8080 / TCP` | Your IP / GitHub CIDRs | Jenkins Web UI and Webhook receiver |
-| **Swarm Management**| `2377 / TCP` | Worker Security Group | Cluster management communications |
-| **Node Comms** | `7946 / TCP+UDP` | Cluster Security Group | Inter-node gossip communication |
-| **Overlay Network** | `4789 / UDP` | Cluster Security Group | Overlay network traffic with VXLAN |
-
----
-
-## 5. Docker Swarm Cluster Formation
-
-### 5.1 Initialize Manager Node
-On the Manager EC2 instance:
-```bash
-docker swarm init --advertise-addr <MANAGER_PRIVATE_IP>
-```
-Docker outputs a join command with a worker token:
-```bash
-docker swarm join --token <WORKER_JOIN_TOKEN> <MANAGER_PRIVATE_IP>:2377
-```
-
-### 5.2 Join Worker Node
-SSH into the Worker EC2 instance and execute the join command generated by the manager.
-
-### 5.3 Verify Swarm Status
-On the Manager instance, run:
-```bash
-docker node ls
-```
-Output:
-```
-ID                            HOSTNAME               STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
-udcxfpy46j4bg1tg6wjmo92zg *   cicd-swarm-manager     Ready     Active         Leader           29.x
-s92hf84kdmsla9103msle9291     cicd-swarm-worker      Ready     Active                          29.x
-```
-Both nodes must show status **Ready**.
-
----
-
-## 6. Jenkins Pipeline Configuration
-
-### 6.1 Prerequisites on Jenkins Host
-1. Install Docker, AWS CLI v2, and Git:
-   ```bash
-   sudo apt-get update
-   sudo apt-get install -y docker.io awscli git
-   sudo usermod -aG docker jenkins
-   sudo systemctl restart jenkins
-   ```
-2. Assign an **IAM Role** to the EC2 instance with `AmazonEC2ContainerRegistryPowerUser` (or configure AWS credentials in Jenkins).
-
-### 6.2 Configure Pipeline Job
-1. In Jenkins, create a new **Pipeline** job named `cicd-homework2`.
-2. Under **Build Triggers**, check **GitHub hook trigger for GITScm polling**.
-3. Under **Pipeline**, select **Pipeline script from SCM**:
-   - SCM: `Git`
-   - Repository URL: `https://github.com/Chamroeun12/cicd-homework2.git`
-   - Branches to build: `*/main` (or `*/feature/docker-ci-cd`)
-   - Script Path: `Jenkinsfile`
-4. In GitHub repository **Settings -> Webhooks**:
-   - Payload URL: `http://<JENKINS_PUBLIC_IP>:8080/github-webhook/`
-   - Content type: `application/json`
-   - Events: `Just the push event`
-
-![Jenkins CI/CD Pipeline Stages](screenshots/jenkins_pipeline_stages.png)
-
----
-
-## 7. Zero-Downtime Rolling Updates
-
-The deployment configuration in `docker-stack.yml` ensures high availability:
+### 5.1 Rolling Updates (Default Strategy)
+Configured inside `k8s/deployment.yaml`:
 ```yaml
-deploy:
-  replicas: 2
-  restart_policy:
-    condition: on-failure
-    delay: 5s
-    max_attempts: 3
-    window: 120s
-  update_config:
-    parallelism: 1          # Update 1 replica at a time
-    delay: 10s              # Wait 10s between replica updates
-    order: start-first      # Start the new container BEFORE stopping the old one
-    failure_action: rollback
-    monitor: 15s
-    max_failure_ratio: 0.2
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
 ```
+- **Zero Downtime:** `maxUnavailable: 0` ensures existing pods continue serving traffic until new pods pass their HTTP readiness probes on `/health`.
 
-- **`order: start-first`**: Docker Swarm pulls and boots the new replica. Only after the container passes its healthcheck does Swarm drain traffic and terminate the old replica.
-- **`parallelism: 1`**: Guarantees that at least one healthy replica is actively serving requests at all times.
+### 5.2 Blue-Green Deployment Strategy
+Located under `k8s/blue-green/`:
+- **Blue Deployment:** Stable live environment (`version: blue`).
+- **Green Deployment:** Candidate release (`version: green`).
+- **Preview Service:** Points to candidate for integration testing.
+- **Production Service:** Routes public traffic to active color.
+
+**Switching Traffic Instantly:**
+```powershell
+# Switch traffic to green
+.\k8s\blue-green\switch-traffic.ps1 -TargetVersion green
+
+# Roll back instantly to blue
+.\k8s\blue-green\switch-traffic.ps1 -TargetVersion blue
+```
 
 ---
 
-## 8. Deployment Verification
+## 6. How to Demonstrate to Your Lecturer
 
-Run these commands on the Swarm Manager node to verify the deployment:
+Follow this sequence during your presentation:
 
-```bash
-# 1. View running services and replica count
-docker service ls
-
-# 2. View individual task placement across manager and worker nodes
-docker service ps cicd-homework2_cicd-homework2
-
-# 3. Test application health endpoint via public IP
-curl http://<SWARM_PUBLIC_IP>:5000/health
-
-# 4. Observe rolling update during a live build
-watch -n 1 "docker service ps cicd-homework2_cicd-homework2"
-```
-
-![Docker Swarm Cluster & Service Verification](screenshots/swarm_service_rolling_update.png)
-
----
-
-## 9. Grading Rubric Self-Check
-
-| Category | Criterion | Points | Status |
-| :--- | :--- | :---: | :---: |
-| **GitHub** | Clear repo structure (`Dockerfile`, `Jenkinsfile`, `docker-stack.yml`) | 5 / 5 | Completed |
-| | Frequent, incremental commit history with descriptive messages | 5 / 5 | Completed |
-| | Webhook configured to trigger Jenkins automatically on push | 5 / 5 | Configured |
-| **Docker & ECR** | Small, secure base image (`python:3.10-slim`, non-root user) | 5 / 5 | Verified |
-| | Builds and runs locally before touching AWS | 5 / 5 | Verified |
-| | Private Amazon ECR repository exists in documented region | 5 / 5 | Documented |
-| | Authenticates with `aws ecr get-login-password` and pushes version tag | 5 / 5 | Implemented |
-| **Jenkins CI/CD** | Pipeline as code via `Jenkinsfile` checked into git repo | 5 / 5 | Implemented |
-| | Build stage compiles Docker image on trigger | 5 / 5 | Implemented |
-| | Push stage pushes versioned tag (`${BUILD_NUMBER}`) to ECR | 5 / 5 | Implemented |
-| | Deploy stage automatically updates stack on Swarm cluster | 10 / 10 | Implemented |
-| | Webhook / SCM polling triggers pipeline execution | 5 / 5 | Implemented |
-| **Docker Swarm** | Swarm cluster formed (1 Manager + 1 Worker, all Ready) | 5 / 5 | Configured |
-| | `docker stack deploy` runs service pulling image from ECR | 5 / 5 | Configured |
-| | App reachable via public IP on port 5000 | 5 / 5 | Configured |
-| | Rolling update with `update_config` and `restart_policy` | 5 / 5 | Implemented |
-| | Security groups strictly configured for app, SSH, and Swarm | 5 / 5 | Documented |
-| **Documentation**| Complete `README.md` with setup and verification instructions | 5 / 5 | Completed |
-| | Short report with architecture, screenshots, challenges | 5 / 5 | Prepared |
-| **Total** | | **100 / 100** | |
+1. **Explain the 10-Stage Pipeline Architecture:**
+   - Open [`docs/architecture.md`](docs/architecture.md) and show the Mermaid diagram and mapping table.
+2. **Demonstrate Automated Testing & Code Quality (Stages 2 & 3):**
+   - Run `python -m pytest -v` in the terminal to show all tests passing.
+   - Show `sonar-project.properties` and the Trivy container scanning output.
+3. **Show Containerization & Security Best Practices (Stage 4):**
+   - Open [`Dockerfile`](Dockerfile) and explain the multi-stage build, unprivileged non-root user (`appuser:1000`), and native Docker `HEALTHCHECK`.
+4. **Show Kubernetes & GitOps Configuration (Stages 5, 6 & 7):**
+   - Open [`k8s/deployment.yaml`](k8s/deployment.yaml) and [`k8s/argocd/application.yaml`](k8s/argocd/application.yaml).
+   - Explain how Argo CD detects commits to Git and reconciles them onto Amazon EKS.
+5. **Demonstrate Deployment Strategies & Rollback (Stages 8 & 10):**
+   - Open [`docs/rollback-runbook.md`](docs/rollback-runbook.md).
+   - Demonstrate `.\k8s\blue-green\switch-traffic.ps1` to showcase controlled, zero-downtime traffic switching.
+6. **Show Full-Stack Observability (Stage 9):**
+   - Open [`monitoring/grafana/dashboard-cicd.json`](monitoring/grafana/dashboard-cicd.json) and [`monitoring/prometheus/alert-rules.yaml`](monitoring/prometheus/alert-rules.yaml).

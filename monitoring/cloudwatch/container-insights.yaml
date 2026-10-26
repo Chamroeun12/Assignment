@@ -1,0 +1,21 @@
+# AWS CloudWatch Container Insights DaemonSet & Fluent Bit Configuration
+# Sends container stdout/stderr logs from EKS worker nodes to CloudWatch Logs
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: amazon-cloudwatch
+  labels:
+    name: amazon-cloudwatch
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-bit-cluster-info
+  namespace: amazon-cloudwatch
+data:
+  cluster.name: "cicd-eks-cluster"
+  logs.region: "ap-southeast-2"
+  http.server: "On"
+  http.port: "2020"
+  read.head: "Off"
+  read.tail: "On"

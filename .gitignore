@@ -34,9 +34,36 @@ venv.bak/
 
 # Environment Variables & Secrets
 .env
+.env.*
 *.pem
 *.key
 *.secret
+*.pfx
+*.crt
+id_rsa*
+*.id_rsa
+
+# AWS and Kubernetes local credentials
+.aws/
+credentials
+kubeconfig
+kubeconfig*
+*.kubeconfig
+
+# Terraform local state and files
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
+
+# Testing and Code Quality caches
+.pytest_cache/
+.coverage
+htmlcov/
+.scannerwork/
+trivy-results*
+*.sarif
 
 # IDE and Editor files
 .vscode/
@@ -48,8 +75,12 @@ venv.bak/
 # Operating System files
 .DS_Store
 Thumbs.db
+ehthumbs.db
 
-# Assignment PDF & Screenshots
+# Logs
+*.log
+
+# Assignment deliverables
 *.pdf
 !REPORT.pdf
 *.png

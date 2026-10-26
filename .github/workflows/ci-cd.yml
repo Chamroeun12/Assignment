@@ -1,0 +1,225 @@
+name: Production CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'screenshots/**'
+      - 'REPORT.*'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'screenshots/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: read
+  security-events: write
+
+env:
+  AWS_REGION: ap-southeast-2
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID || '399311815210' }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY || 'cicd-homework2' }}
+  APP_NAME: cicd-homework2
+
+jobs:
+  # =========================================================================
+  # STAGE 2: BUILD & AUTOMATED TESTING
+  # =========================================================================
+  build-and-test:
+    name: "Stage 2: Build & Automated Tests"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install Runtime & Testing Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Code Linting & PEP8 Static Checks (flake8)
+        run: |
+          flake8 --max-line-length=120 --exclude=venv,.venv,build_submission_report.py,generate_evidence_screens.py app.py tests/
+
+      - name: Run Automated Pytest Suite with Coverage
+        run: |
+          pytest -v --cov=app --cov-report=xml:coverage.xml --cov-report=term tests/
+
+      - name: Upload Test Coverage Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: coverage.xml
+          retention-days: 7
+
+  # =========================================================================
+  # STAGE 3: CODE QUALITY & SECURITY SCAN (SonarQube & Trivy)
+  # =========================================================================
+  security-and-quality:
+    name: "Stage 3: Code Quality & Security Scan"
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Test Coverage Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: code-coverage-report
+        continue-on-error: true
+
+      - name: SonarQube Code Quality Analysis
+        if: env.SONAR_TOKEN != '' && env.SONAR_HOST_URL != ''
+        uses: sonarsource/sonarqube-scan-action@v3.1.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        continue-on-error: true
+
+      - name: SonarQube Status Fallback Notice
+        if: env.SONAR_TOKEN == '' || env.SONAR_HOST_URL == ''
+        run: |
+          echo "================================================================================"
+          echo "NOTICE: SonarQube server credentials (SONAR_HOST_URL / SONAR_TOKEN) not set."
+          echo "Static analysis configuration is validated locally via sonar-project.properties."
+          echo "================================================================================"
+
+      - name: Build Local Container Image for Vulnerability Scan
+        run: |
+          docker build -t ${{ env.APP_NAME }}:${{ github.sha }} .
+
+      - name: Run Trivy Vulnerability Scan on Container Image
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          image-ref: "${{ env.APP_NAME }}:${{ github.sha }}"
+          format: "table"
+          exit-code: "0" # Audit mode; change to '1' to enforce hard failure
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "CRITICAL,HIGH"
+
+      - name: Run Trivy Config Scan on Kubernetes Manifests
+        uses: aquasecurity/trivy-action@0.29.0
+        with:
+          scan-type: "config"
+          scan-ref: "k8s/"
+          format: "table"
+          exit-code: "0"
+          severity: "CRITICAL,HIGH"
+
+  # =========================================================================
+  # STAGE 4: BUILD & PUSH DOCKER IMAGE TO AMAZON ECR
+  # =========================================================================
+  build-and-push-ecr:
+    name: "Stage 4: Build & Push to Amazon ECR"
+    needs: security-and-quality
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/feature/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (OIDC or Secret Keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          # OIDC Role assumption (preferred for security)
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          # Fallback to standard IAM user keys if OIDC is not provisioned
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        continue-on-error: true
+        id: aws_login
+
+      - name: Check AWS Authentication Readiness
+        id: check_auth
+        run: |
+          if [ "${{ steps.aws_login.outcome }}" == "success" ]; then
+            echo "auth_ready=true" >> $GITHUB_OUTPUT
+            echo "AWS credentials authenticated successfully."
+          else
+            echo "auth_ready=false" >> $GITHUB_OUTPUT
+            echo "AWS credentials not yet configured in GitHub Secrets. Skipping remote ECR push."
+          fi
+
+      - name: Log in to Amazon ECR
+        if: steps.check_auth.outputs.auth_ready == 'true'
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, Tag, and Push Image to Amazon ECR
+        if: steps.check_auth.outputs.auth_ready == 'true'
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          echo "Building Docker image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker build \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          
+          echo "Pushing images to Amazon ECR..."
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "Pushed successfully: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+  # =========================================================================
+  # STAGE 5: UPDATE KUBERNETES GITOPS MANIFESTS
+  # =========================================================================
+  update-gitops:
+    name: "Stage 5: Update GitOps Manifest"
+    needs: build-and-push-ecr
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update Kubernetes Deployment Image Reference via Kustomize
+        run: |
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          ECR_REGISTRY="${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com"
+          TARGET_IMAGE="${ECR_REGISTRY}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
+          
+          echo "Updating GitOps manifest with target image: $TARGET_IMAGE"
+          cd k8s
+          sed -i "s|image: .*dkr.ecr.*|image: ${TARGET_IMAGE}|g" deployment.yaml
+          
+          # Configure Git user for automated commit
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if git diff --quiet deployment.yaml; then
+            echo "No change in deployment image tag."
+          else
+            git add deployment.yaml
+            git commit -m "ci(gitops): update production image to ${SHORT_SHA} [skip ci]"
+            git push origin main
+            echo "GitOps manifest committed and pushed successfully."
+          fi

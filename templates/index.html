@@ -6,15 +6,18 @@
     <title>{{ title }}</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --card-border: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
+            --bg-color: #0b0f19;
+            --card-bg: #111827;
+            --card-border: #1f2937;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
             --accent-blue: #38bdf8;
-            --accent-green: #34d399;
-            --accent-purple: #a855f7;
-            --badge-bg: #0369a1;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-purple: #8b5cf6;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --badge-bg: rgba(56, 189, 248, 0.12);
         }
 
         * {
@@ -32,17 +35,17 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            padding: 2rem 1rem;
         }
 
         .container {
-            max-width: 860px;
+            max-width: 1024px;
             width: 100%;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 2.5rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6);
         }
 
         header {
@@ -52,117 +55,144 @@
             margin-bottom: 2rem;
         }
 
-        h1 {
-            font-size: 2.4rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 0.75rem;
-            background: linear-gradient(135deg, #38bdf8, #818cf8);
+        .header-title {
+            font-size: 2.3rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
         }
 
         .meta-badges {
             display: flex;
             justify-content: center;
-            gap: 1rem;
+            gap: 0.75rem;
             flex-wrap: wrap;
-            margin-top: 1rem;
+            margin-top: 1.25rem;
         }
 
         .badge {
-            background-color: rgba(56, 189, 248, 0.15);
-            border: 1px solid rgba(56, 189, 248, 0.35);
+            background-color: var(--badge-bg);
+            border: 1px solid rgba(56, 189, 248, 0.3);
             color: var(--accent-blue);
-            padding: 0.4rem 1rem;
+            padding: 0.35rem 0.9rem;
             border-radius: 9999px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
         }
 
-        .badge.node {
-            background-color: rgba(52, 211, 153, 0.15);
-            border: 1px solid rgba(52, 211, 153, 0.35);
+        .badge.green {
+            background-color: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.3);
             color: var(--accent-green);
         }
 
-        .pipeline-section {
-            margin-bottom: 2rem;
+        .badge.purple {
+            background-color: rgba(139, 92, 246, 0.12);
+            border-color: rgba(139, 92, 246, 0.3);
+            color: var(--accent-purple);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
         }
 
         .section-title {
             font-size: 1.25rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 1.25rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
 
-        .pipeline-flow {
+        .pipeline-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 0.75rem;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
             margin-bottom: 2rem;
         }
 
-        .flow-step {
-            background: rgba(15, 23, 42, 0.6);
+        .step-card {
+            background: rgba(17, 24, 39, 0.7);
             border: 1px solid var(--card-border);
-            border-radius: 10px;
-            padding: 1rem;
-            text-align: center;
-            transition: transform 0.2s, border-color 0.2s;
+            border-radius: 12px;
+            padding: 1.1rem;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .flow-step:hover {
-            transform: translateY(-2px);
+        .step-card:hover {
+            transform: translateY(-3px);
             border-color: var(--accent-blue);
+            box-shadow: 0 10px 20px -5px rgba(56, 189, 248, 0.15);
         }
 
-        .flow-number {
+        .step-number {
             font-size: 0.75rem;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--accent-blue);
-            margin-bottom: 0.25rem;
-            font-weight: 700;
+            margin-bottom: 0.35rem;
         }
 
-        .flow-name {
-            font-weight: 600;
+        .step-name {
+            font-weight: 700;
             font-size: 0.95rem;
             color: #ffffff;
+            margin-bottom: 0.35rem;
+        }
+
+        .step-tech {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
         }
 
         .pipeline-details {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1rem;
         }
 
-        .detail-item {
-            background: rgba(15, 23, 42, 0.4);
+        .detail-card {
+            background: rgba(15, 23, 42, 0.5);
             border-left: 3px solid var(--accent-blue);
-            padding: 0.85rem 1.25rem;
-            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            border-radius: 0 10px 10px 0;
+            border-top: 1px solid var(--card-border);
+            border-right: 1px solid var(--card-border);
+            border-bottom: 1px solid var(--card-border);
         }
 
-        .detail-item h3 {
+        .detail-card h3 {
             font-size: 0.95rem;
             color: #ffffff;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .detail-item p {
-            font-size: 0.875rem;
+        .detail-card p {
+            font-size: 0.825rem;
             color: var(--text-secondary);
-            line-height: 1.5;
+            line-height: 1.45;
         }
 
         footer {
-            margin-top: 2rem;
+            margin-top: 2.5rem;
             padding-top: 1.5rem;
             border-top: 1px solid var(--card-border);
             text-align: center;
@@ -174,66 +204,121 @@
 <body>
     <div class="container">
         <header>
-            <h1>{{ title }}</h1>
-            <p style="color: var(--text-secondary);">Automated CI/CD Pipeline on AWS</p>
+            <h1 class="header-title">Production CI/CD Pipeline</h1>
+            <p class="header-subtitle">Commit to Production: 10 Key Steps on Amazon EKS &amp; Argo CD GitOps</p>
             <div class="meta-badges">
-                <span class="badge" id="app-version">Version: {{ version }}</span>
-                <span class="badge node" id="app-hostname">Host: {{ hostname }}</span>
+                <span class="badge" id="app-version">Tag / Version: {{ version }}</span>
+                <span class="badge green" id="app-hostname">Pod Host: {{ hostname }}</span>
+                <span class="badge purple">Cluster: Amazon EKS</span>
             </div>
         </header>
 
-        <section class="pipeline-section">
-            <h2 class="section-title">Automated CI/CD Pipeline Architecture</h2>
-            
-            <div class="pipeline-flow">
-                <div class="flow-step">
-                    <div class="flow-number">Step 1</div>
-                    <div class="flow-name">GitHub</div>
+        <section>
+            <div class="section-header">
+                <h2 class="section-title">End-to-End Pipeline Workflow</h2>
+                <a href="/health" target="_blank" style="color: var(--accent-blue); font-size: 0.85rem; text-decoration: none; font-weight: 600;">Check Health API &rarr;</a>
+            </div>
+
+            <!-- 10 Pipeline Stages matching reference diagram -->
+            <div class="pipeline-grid">
+                <div class="step-card">
+                    <div class="step-number">Step 1</div>
+                    <div class="step-name">Commit &amp; Push</div>
+                    <div class="step-tech">Git &bull; GitHub</div>
                 </div>
-                <div class="flow-step">
-                    <div class="flow-number">Step 2</div>
-                    <div class="flow-name">Jenkins</div>
+                <div class="step-card">
+                    <div class="step-number">Step 2</div>
+                    <div class="step-name">Build &amp; Test</div>
+                    <div class="step-tech">GitHub Actions / Jenkins</div>
                 </div>
-                <div class="flow-step">
-                    <div class="flow-number">Step 3</div>
-                    <div class="flow-name">Docker</div>
+                <div class="step-card">
+                    <div class="step-number">Step 3</div>
+                    <div class="step-name">Quality &amp; Security</div>
+                    <div class="step-tech">SonarQube &bull; Trivy</div>
                 </div>
-                <div class="flow-step">
-                    <div class="flow-number">Step 4</div>
-                    <div class="flow-name">Amazon ECR</div>
+                <div class="step-card">
+                    <div class="step-number">Step 4</div>
+                    <div class="step-name">Build &amp; Push</div>
+                    <div class="step-tech">Amazon ECR</div>
                 </div>
-                <div class="flow-step">
-                    <div class="flow-number">Step 5</div>
-                    <div class="flow-name">Docker Swarm</div>
+                <div class="step-card">
+                    <div class="step-number">Step 5</div>
+                    <div class="step-name">GitOps Update</div>
+                    <div class="step-tech">K8s Manifests</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">Step 6</div>
+                    <div class="step-name">Sync with EKS</div>
+                    <div class="step-tech">Argo CD</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">Step 7</div>
+                    <div class="step-name">Deploy to Pods</div>
+                    <div class="step-tech">Kubernetes Engine</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">Step 8</div>
+                    <div class="step-name">Deployment Strategy</div>
+                    <div class="step-tech">Rolling / Blue-Green</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">Step 9</div>
+                    <div class="step-name">Monitoring</div>
+                    <div class="step-tech">Prometheus &bull; Grafana</div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">Step 10</div>
+                    <div class="step-name">Rollback</div>
+                    <div class="step-tech">GitOps Revert &bull; K8s Undo</div>
                 </div>
             </div>
 
             <div class="pipeline-details">
-                <div class="detail-item" style="border-left-color: #38bdf8;">
-                    <h3>1. GitHub (Version Control & Webhook)</h3>
-                    <p>Developers push code changes to GitHub. An automated webhook immediately notifies Jenkins of incoming commits.</p>
+                <div class="detail-card" style="border-left-color: #38bdf8;">
+                    <h3>1. Source Control (Git)</h3>
+                    <p>Developers commit code to branch-protected GitHub repository, triggering automated CI/CD webhooks.</p>
                 </div>
-                <div class="detail-item" style="border-left-color: #818cf8;">
-                    <h3>2. Jenkins (CI/CD Automation Engine)</h3>
-                    <p>Jenkins automatically checks out code, runs automated tests, builds the container image, and handles authentication.</p>
+                <div class="detail-card" style="border-left-color: #818cf8;">
+                    <h3>2. Build &amp; Test</h3>
+                    <p>Pytest unit/integration test suite and Flake8 linter run automatically on Python 3.10 with coverage validation.</p>
                 </div>
-                <div class="detail-item" style="border-left-color: #a855f7;">
-                    <h3>3. Docker (Containerization)</h3>
-                    <p>Docker packages the application into a lightweight, isolated image tagged with the traceable build number or commit SHA.</p>
+                <div class="detail-card" style="border-left-color: #c084fc;">
+                    <h3>3. Quality &amp; Security Scan</h3>
+                    <p>SonarQube scans code quality and Trivy executes CVE vulnerability scanning on Docker images and K8s manifests.</p>
                 </div>
-                <div class="detail-item" style="border-left-color: #f43f5e;">
-                    <h3>4. Amazon ECR (Private Container Registry)</h3>
-                    <p>The tagged Docker image is authenticated and securely pushed to private Amazon Elastic Container Registry (ECR).</p>
+                <div class="detail-card" style="border-left-color: #f59e0b;">
+                    <h3>4. Amazon ECR Registry</h3>
+                    <p>Docker container image is tagged with immutable git SHA and pushed to private Amazon ECR repository.</p>
                 </div>
-                <div class="detail-item" style="border-left-color: #34d399;">
-                    <h3>5. Docker Swarm on EC2 (Container Orchestration)</h3>
-                    <p>Docker Swarm pulls the new image from ECR and executes a zero-downtime rolling update across the manager and worker EC2 nodes.</p>
+                <div class="detail-card" style="border-left-color: #10b981;">
+                    <h3>5. GitOps Manifest Automation</h3>
+                    <p>CI pipeline updates K8s deployment image reference in repository with [skip ci] to avoid loops.</p>
+                </div>
+                <div class="detail-card" style="border-left-color: #06b6d4;">
+                    <h3>6. Argo CD Sync</h3>
+                    <p>Argo CD reconciles live Amazon EKS cluster state with the GitOps desired state repository.</p>
+                </div>
+                <div class="detail-card" style="border-left-color: #3b82f6;">
+                    <h3>7. Kubernetes Pod Health</h3>
+                    <p>Pods provision with unprivileged non-root UID 1000, resource limits, and HTTP /health probes.</p>
+                </div>
+                <div class="detail-card" style="border-left-color: #10b981;">
+                    <h3>8. Zero-Downtime Rollout</h3>
+                    <p>Zero-downtime Rolling Update (maxSurge=1, maxUnavailable=0) and documented Blue-Green candidate switching.</p>
+                </div>
+                <div class="detail-card" style="border-left-color: #f43f5e;">
+                    <h3>9. Full-Stack Observability</h3>
+                    <p>Prometheus scrapes metrics, Grafana visualizes pod health, and CloudWatch forwards container logs.</p>
+                </div>
+                <div class="detail-card" style="border-left-color: #64748b;">
+                    <h3>10. Safe Rollback</h3>
+                    <p>Git-authoritative revert triggers instant Argo CD rollback without configuration drift conflicts.</p>
                 </div>
             </div>
         </section>
 
         <footer>
-            Cloud Computing &bull; Homework 2 &bull; CI/CD with Jenkins, GitHub, Docker &amp; Docker Swarm on AWS
+            Master's Degree in Cloud Computing &bull; Assignment &bull; Chamroeun Saran (Chamroeun12)
         </footer>
     </div>
 </body>
