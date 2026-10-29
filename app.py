@@ -28,6 +28,17 @@ def health():
     }), 200
 
 
+@app.route("/api/info")
+def api_info():
+    return jsonify({
+        "service": "cicd-homework2-backend",
+        "version": APP_VERSION,
+        "hostname": socket.gethostname(),
+        "runtime": "python-flask",
+        "cluster": "docker-swarm"
+    }), 200
+
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)

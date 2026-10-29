@@ -48,3 +48,15 @@ def test_404_not_found(client):
     """Test that requesting an invalid route returns standard HTTP 404."""
     response = client.get("/invalid-nonexistent-endpoint")
     assert response.status_code == 404
+
+
+def test_api_info_endpoint(client):
+    """Test that /api/info returns HTTP 200 with JSON metadata payload."""
+    response = client.get("/api/info")
+    assert response.status_code == 200
+    assert response.content_type == "application/json"
+    data = json.loads(response.data)
+    assert data.get("service") == "cicd-homework2-backend"
+    assert "version" in data
+    assert "hostname" in data
+    assert data.get("cluster") == "docker-swarm"
