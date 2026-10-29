@@ -21,10 +21,48 @@ provider "aws" {
 
 
 # ==============================================================================
-# 2. SECURITY GROUP CONFIGURATION
+# 2. SECURITY GROUP RULES FOR DOCKER SWARM CLUSTER COMMUNICATION
 # ==============================================================================
-# Uses existing Security Group (var.security_group_id) to avoid
-# restricted ec2:CreateSecurityGroup IAM permission.
+resource "aws_security_group_rule" "swarm_internal_2377" {
+  type              = "ingress"
+  from_port         = 2377
+  to_port           = 2377
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = var.security_group_id
+  description       = "Docker Swarm cluster management"
+}
+
+resource "aws_security_group_rule" "swarm_internal_7946_tcp" {
+  type              = "ingress"
+  from_port         = 7946
+  to_port           = 7946
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = var.security_group_id
+  description       = "Docker Swarm node discovery TCP"
+}
+
+resource "aws_security_group_rule" "swarm_internal_7946_udp" {
+  type              = "ingress"
+  from_port         = 7946
+  to_port           = 7946
+  protocol          = "udp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = var.security_group_id
+  description       = "Docker Swarm node discovery UDP"
+}
+
+resource "aws_security_group_rule" "swarm_internal_4789" {
+  type              = "ingress"
+  from_port         = 4789
+  to_port           = 4789
+  protocol          = "udp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = var.security_group_id
+  description       = "Docker Swarm overlay network VXLAN"
+}
+
 
 
 # ==============================================================================
