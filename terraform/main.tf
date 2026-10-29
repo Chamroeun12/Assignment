@@ -13,22 +13,12 @@ provider "aws" {
 }
 
 # ==============================================================================
-# 1. DYNAMIC AMI LOOKUP (No Hardcoded AMI IDs)
+# 1. AMI CONFIGURATION
 # ==============================================================================
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners      = ["099720109477"] # Canonical official AWS account ID
+# Uses var.ami_id (default Ubuntu LTS in ap-southeast-2).
+# Avoids ec2:DescribeImages 403 UnauthorizedOperation errors for IAM users
+# with scoped EC2 permissions.
 
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-}
 
 # ==============================================================================
 # 2. NETWORKING: DEDICATED VPC, SUBNET & INTERNET GATEWAY
@@ -202,7 +192,7 @@ resource "aws_key_pair" "swarm_key" {
 # 5. EC2 INSTANCE: SWARM MANAGER (Leader Node)
 # ==============================================================================
 resource "aws_instance" "swarm_manager" {
-  ami                         = data.aws_ami.ubuntu.id
+  ami                         = var.ami_id
   instance_type               = var.manager_instance_type
   subnet_id                   = aws_subnet.public.id
   vpc_security_group_ids      = [aws_security_group.swarm_sg.id]
@@ -255,7 +245,7 @@ resource "aws_instance" "swarm_manager" {
 # ==============================================================================
 resource "aws_instance" "swarm_workers" {
   count                       = var.worker_count
-  ami                         = data.aws_ami.ubuntu.id
+  ami                         = var.ami_id
   instance_type               = var.worker_instance_type
   subnet_id                   = aws_subnet.public.id
   vpc_security_group_ids      = [aws_security_group.swarm_sg.id]

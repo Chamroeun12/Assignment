@@ -11,3 +11,7 @@ allowed_ssh_cidr      = ["0.0.0.0/0"]
 
 # Replace with your actual public key (e.g. cat ~/.ssh/id_ed25519.pub or ~/.ssh/id_rsa.pub)
 ssh_public_key        = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyForCloudComputingHW2 student@cloud-computing"
+
+# Ubuntu AMI ID in ap-southeast-2 (defaults to verified Ubuntu 22.04 LTS)
+ami_id                = "ami-0dd60a46ecc6eac16"
+

@@ -35,9 +35,9 @@ variable "worker_count" {
 }
 
 variable "ssh_public_key" {
-  description = "Public SSH key for EC2 key-pair authentication"
+  description = "Public SSH key for EC2 key-pair authentication (derived from chamroeunsaran.pem)"
   type        = string
-  default     = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyForCloudComputingHW2 student@cloud-computing"
+  default     = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDzTs1xOliicOxPF/8mT5iTJzReLVlURM8/Ymtc5pf3st9LK11GMUoxuRtTmVvEW1kYnjncYewDslDckVm4QhKgR5hJWeV+Q7jwXKTZJlAoqmbAIHsYLPH0CvHcPJYgCSNOj89jUXaXEQuZOhJpX60I3JiFEynCe1G4RFhjU/Ei3OO12ZVkqLZFNUDTAgliK8vHwXh7RTSQntT1B9xFf9JOEsVCKvfFSje25I9cmmCvk1lAYzp46RTRkNnbL+6bbTZP7f9aDDIDDyiA1tg5CaeMRwnrphOrwai+VYJkqqbkxyr7JITUk8sdRZcM7urNsWKyI4Y2QDsXG168g6/TaSd3"
 }
 
 variable "allowed_ssh_cidr" {
@@ -45,3 +45,10 @@ variable "allowed_ssh_cidr" {
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }
+
+variable "ami_id" {
+  description = "Ubuntu AMI ID for ap-southeast-2 Sydney (defaults to verified Ubuntu LTS AMI ami-0dd60a46ecc6eac16)"
+  type        = string
+  default     = "ami-0dd60a46ecc6eac16"
+}
+
