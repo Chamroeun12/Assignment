@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "project_name" {
   description = "Project identifier for resource naming and tagging"
   type        = string
-  default     = "cicd-homework2"
+  default     = "Assignment"
 }
 
 variable "environment" {
