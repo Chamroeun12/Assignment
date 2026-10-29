@@ -52,3 +52,20 @@ variable "ami_id" {
   default     = "ami-0dd60a46ecc6eac16"
 }
 
+variable "vpc_id" {
+  description = "Existing VPC ID to deploy the cluster into"
+  type        = string
+  default     = "vpc-03aed2e9175c9d4f0"
+}
+
+variable "subnet_id" {
+  description = "Existing public subnet ID to deploy the cluster into"
+  type        = string
+  default     = "subnet-0c47f571639f95653"
+}
+
+variable "key_name" {
+  description = "Existing EC2 Key Pair name in AWS (defaults to chamroeunsaran)"
+  type        = string
+  default     = "chamroeunsaran"
+}

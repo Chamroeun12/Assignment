@@ -21,70 +21,13 @@ provider "aws" {
 
 
 # ==============================================================================
-# 2. NETWORKING: DEDICATED VPC, SUBNET & INTERNET GATEWAY
+# 2. LEAST-PRIVILEGE SECURITY GROUP FOR DOCKER SWARM & APPLICATION
 # ==============================================================================
-resource "aws_vpc" "swarm_vpc" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true
-  enable_dns_support   = true
-
-  tags = {
-    Name        = "${var.project_name}-vpc"
-    Environment = var.environment
-    Project     = var.project_name
-  }
-}
-
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.swarm_vpc.id
-
-  tags = {
-    Name        = "${var.project_name}-igw"
-    Environment = var.environment
-    Project     = var.project_name
-  }
-}
-
-resource "aws_subnet" "public" {
-  vpc_id                  = aws_vpc.swarm_vpc.id
-  cidr_block              = "10.0.1.0/24"
-  availability_zone       = "${var.aws_region}a"
-  map_public_ip_on_launch = true
-
-  tags = {
-    Name        = "${var.project_name}-public-subnet"
-    Environment = var.environment
-    Project     = var.project_name
-  }
-}
-
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.swarm_vpc.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
-  }
-
-  tags = {
-    Name        = "${var.project_name}-public-rt"
-    Environment = var.environment
-    Project     = var.project_name
-  }
-}
-
-resource "aws_route_table_association" "public" {
-  subnet_id      = aws_subnet.public.id
-  route_table_id = aws_route_table.public.id
-}
-
-# ==============================================================================
-# 3. LEAST-PRIVILEGE SECURITY GROUP FOR DOCKER SWARM & APPLICATION
-# ==============================================================================
+# Deployed into the existing VPC (var.vpc_id) to avoid restricted ec2:CreateVpc
 resource "aws_security_group" "swarm_sg" {
   name        = "${var.project_name}-swarm-sg"
   description = "Least-privilege security group for Docker Swarm cluster nodes and load balancer"
-  vpc_id      = aws_vpc.swarm_vpc.id
+  vpc_id      = var.vpc_id
 
   # SSH Administration
   ingress {
@@ -175,28 +118,14 @@ resource "aws_security_group" "swarm_sg" {
 }
 
 # ==============================================================================
-# 4. SSH KEY PAIR
-# ==============================================================================
-resource "aws_key_pair" "swarm_key" {
-  key_name   = "${var.project_name}-key"
-  public_key = var.ssh_public_key
-
-  tags = {
-    Name        = "${var.project_name}-key"
-    Environment = var.environment
-    Project     = var.project_name
-  }
-}
-
-# ==============================================================================
-# 5. EC2 INSTANCE: SWARM MANAGER (Leader Node)
+# 3. EC2 INSTANCE: SWARM MANAGER (Leader Node)
 # ==============================================================================
 resource "aws_instance" "swarm_manager" {
   ami                         = var.ami_id
   instance_type               = var.manager_instance_type
-  subnet_id                   = aws_subnet.public.id
+  subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [aws_security_group.swarm_sg.id]
-  key_name                    = aws_key_pair.swarm_key.key_name
+  key_name                    = var.key_name
   associate_public_ip_address = true
 
   root_block_device {
@@ -241,15 +170,15 @@ resource "aws_instance" "swarm_manager" {
 }
 
 # ==============================================================================
-# 6. EC2 INSTANCES: SWARM WORKERS (2 Worker Nodes, Total: 1 Manager + 2 Workers)
+# 4. EC2 INSTANCES: SWARM WORKERS (2 Worker Nodes, Total: 1 Manager + 2 Workers)
 # ==============================================================================
 resource "aws_instance" "swarm_workers" {
   count                       = var.worker_count
   ami                         = var.ami_id
   instance_type               = var.worker_instance_type
-  subnet_id                   = aws_subnet.public.id
+  subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [aws_security_group.swarm_sg.id]
-  key_name                    = aws_key_pair.swarm_key.key_name
+  key_name                    = var.key_name
   associate_public_ip_address = true
 
   root_block_device {
