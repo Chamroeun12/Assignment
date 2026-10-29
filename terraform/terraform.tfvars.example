@@ -19,4 +19,6 @@ ami_id                = "ami-0dd60a46ecc6eac16"
 vpc_id                = "vpc-03aed2e9175c9d4f0"
 subnet_id             = "subnet-0c47f571639f95653"
 key_name              = "chamroeunsaran"
+security_group_id     = "sg-0d6f8fa584d32a992"
+
 

@@ -21,101 +21,11 @@ provider "aws" {
 
 
 # ==============================================================================
-# 2. LEAST-PRIVILEGE SECURITY GROUP FOR DOCKER SWARM & APPLICATION
+# 2. SECURITY GROUP CONFIGURATION
 # ==============================================================================
-# Deployed into the existing VPC (var.vpc_id) to avoid restricted ec2:CreateVpc
-resource "aws_security_group" "swarm_sg" {
-  name        = "${var.project_name}-swarm-sg"
-  description = "Least-privilege security group for Docker Swarm cluster nodes and load balancer"
-  vpc_id      = var.vpc_id
+# Uses existing Security Group (var.security_group_id) to avoid
+# restricted ec2:CreateSecurityGroup IAM permission.
 
-  # SSH Administration
-  ingress {
-    description = "SSH administrative access"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = var.allowed_ssh_cidr
-  }
-
-  # Nginx Load Balancer HTTP Ingress
-  ingress {
-    description = "Public HTTP web traffic to Nginx load balancer"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Nginx Load Balancer HTTPS Ingress
-  ingress {
-    description = "Public HTTPS web traffic"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Jenkins Webhook & CI/CD Dashboard
-  ingress {
-    description = "Jenkins web UI and GitHub webhook ingress"
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Docker Swarm Cluster Management (Restricted strictly to cluster members)
-  ingress {
-    description = "Docker Swarm cluster management communication between manager and workers"
-    from_port   = 2377
-    to_port     = 2377
-    protocol    = "tcp"
-    self        = true
-  }
-
-  # Docker Swarm Node Discovery and Gossip Protocol (TCP)
-  ingress {
-    description = "Docker Swarm node discovery and gossip (TCP)"
-    from_port   = 7946
-    to_port     = 7946
-    protocol    = "tcp"
-    self        = true
-  }
-
-  # Docker Swarm Node Discovery and Gossip Protocol (UDP)
-  ingress {
-    description = "Docker Swarm node discovery and gossip (UDP)"
-    from_port   = 7946
-    to_port     = 7946
-    protocol    = "udp"
-    self        = true
-  }
-
-  # Docker Swarm Overlay Network VXLAN Traffic (UDP)
-  ingress {
-    description = "Docker Swarm overlay network VXLAN traffic"
-    from_port   = 4789
-    to_port     = 4789
-    protocol    = "udp"
-    self        = true
-  }
-
-  # Outbound Internet Access for Package Installation & Container Image Pulls
-  egress {
-    description = "Allow all outbound traffic for software updates and container image pulls"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name        = "${var.project_name}-swarm-sg"
-    Environment = var.environment
-    Project     = var.project_name
-  }
-}
 
 # ==============================================================================
 # 3. EC2 INSTANCE: SWARM MANAGER (Leader Node)
@@ -124,7 +34,7 @@ resource "aws_instance" "swarm_manager" {
   ami                         = var.ami_id
   instance_type               = var.manager_instance_type
   subnet_id                   = var.subnet_id
-  vpc_security_group_ids      = [aws_security_group.swarm_sg.id]
+  vpc_security_group_ids      = [var.security_group_id]
   key_name                    = var.key_name
   associate_public_ip_address = true
 
@@ -177,7 +87,7 @@ resource "aws_instance" "swarm_workers" {
   ami                         = var.ami_id
   instance_type               = var.worker_instance_type
   subnet_id                   = var.subnet_id
-  vpc_security_group_ids      = [aws_security_group.swarm_sg.id]
+  vpc_security_group_ids      = [var.security_group_id]
   key_name                    = var.key_name
   associate_public_ip_address = true
 

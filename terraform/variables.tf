@@ -69,3 +69,10 @@ variable "key_name" {
   type        = string
   default     = "chamroeunsaran"
 }
+
+variable "security_group_id" {
+  description = "Existing Security Group ID to attach to instances (defaults to sg-0d6f8fa584d32a992)"
+  type        = string
+  default     = "sg-0d6f8fa584d32a992"
+}
+
