@@ -134,9 +134,9 @@ The Docker Swarm cluster operates with **1 Manager and 2 Workers** all in `Ready
 
 ```
 ID                            HOSTNAME              STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
-udcxfpy46j4bg1tg6wjmo92zg *   cicd-swarm-manager    Ready     Active         Leader           26.1.4
-s92hf84kdmsla9103msle9291     cicd-swarm-worker-1   Ready     Active                          26.1.4
-m81kc92nx74la9284ksjd8172     cicd-swarm-worker-2   Ready     Active                          26.1.4
+y23lo6y02dvb42iysgdz9jp42 *   swarm-manager   Ready     Active         Leader           29.9.2
+oa4p3gxokfz5z0hah3skrceal     swarm-worker1   Ready     Active                          29.9.2
+yvsp4qjaq9uehic2v3mq4osx1     swarm-worker2   Ready     Active                          29.9.2
 ```
 
 ### 4.4 Docker Stack Services & Nginx Load Balancer
