@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cicd-homework2
+  name: cicd-assignment
   namespace: cicd-production
   labels:
-    app: cicd-homework2
+    app: cicd-assignment
     tier: frontend
     environment: production
-    app.kubernetes.io/name: cicd-homework2
+    app.kubernetes.io/name: cicd-assignment
     app.kubernetes.io/instance: production
     app.kubernetes.io/managed-by: argocd
 spec:
@@ -20,11 +20,11 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app: cicd-homework2
+      app: cicd-assignment
   template:
     metadata:
       labels:
-        app: cicd-homework2
+        app: cicd-assignment
         tier: frontend
     spec:
       securityContext:
@@ -34,7 +34,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: web-app
-          image: 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2:latest
+          image: 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment:latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -42,7 +42,7 @@ spec:
               protocol: TCP
           envFrom:
             - configMapRef:
-                name: cicd-homework2-config
+                name: cicd-assignment-config
           resources:
             requests:
               cpu: 100m

@@ -3,9 +3,9 @@
 **Course:** Master of Science in Cloud Computing  
 **Project Title:** Cloud Computing Project: GitHub · Jenkins · Terraform · Docker · Docker Swarm · EC2  
 **Author:** Chamroeun Saran (GitHub: [Chamroeun12](https://github.com/Chamroeun12))  
-**Repository:** [https://github.com/Chamroeun12/cicd-homework2](https://github.com/Chamroeun12/cicd-homework2)  
+**Repository:** [https://github.com/Chamroeun12/Assignment](https://github.com/Chamroeun12/Assignment)  
 **Target AWS Region:** Sydney (`ap-southeast-2`)  
-**Amazon ECR Registry:** `399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2`  
+**Amazon ECR Registry:** `399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment`  
 **Date:** October 2026  
 
 ---
@@ -14,7 +14,7 @@
 - **Project Title:** High-Availability Multi-Service CI/CD with Docker Swarm and Terraform on AWS EC2
 - **Course:** Master of Science in Cloud Computing
 - **Student Name:** Chamroeun Saran
-- **Submission Repository:** `Chamroeun12/cicd-homework2`
+- **Submission Repository:** `Chamroeun12/Assignment`
 - **Architecture Stack:** GitHub, Jenkins, Terraform (IaC), Docker, Docker Swarm (1 Manager + 2 Workers), Nginx Load Balancer, AWS EC2, Telegram Bot API
 
 ---

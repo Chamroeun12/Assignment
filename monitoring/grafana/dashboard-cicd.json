@@ -18,7 +18,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "kube_deployment_status_replicas_available{deployment=\"cicd-homework2\"}",
+          "expr": "kube_deployment_status_replicas_available{deployment=\"cicd-assignment\"}",
           "refId": "A"
         }
       ]
@@ -46,7 +46,7 @@
       "targets": [
         {
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "expr": "kube_deployment_status_replicas_updated{deployment=\"cicd-homework2\"}",
+          "expr": "kube_deployment_status_replicas_updated{deployment=\"cicd-assignment\"}",
           "refId": "A"
         }
       ]

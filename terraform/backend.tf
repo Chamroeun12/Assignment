@@ -9,18 +9,18 @@
 # bucket with AES-256 server-side encryption and distributed state locking via DynamoDB.
 #
 # To activate Amazon S3 remote state management:
-# 1. Create S3 bucket: aws s3api create-bucket --bucket cicd-homework2-tfstate --region ap-southeast-2 --create-bucket-configuration LocationConstraint=ap-southeast-2
-# 2. Enable versioning: aws s3api put-bucket-versioning --bucket cicd-homework2-tfstate --versioning-configuration Status=Enabled
-# 3. Create DynamoDB table: aws dynamodb create-table --table-name cicd-homework2-tflocks --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --billing-mode PAY_PER_REQUEST --region ap-southeast-2
+# 1. Create S3 bucket: aws s3api create-bucket --bucket cicd-assignment-tfstate --region ap-southeast-2 --create-bucket-configuration LocationConstraint=ap-southeast-2
+# 2. Enable versioning: aws s3api put-bucket-versioning --bucket cicd-assignment-tfstate --versioning-configuration Status=Enabled
+# 3. Create DynamoDB table: aws dynamodb create-table --table-name cicd-assignment-tflocks --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --billing-mode PAY_PER_REQUEST --region ap-southeast-2
 # 4. Uncomment the backend block below and execute: terraform init -migrate-state
 #
 # terraform {
 #   backend "s3" {
-#     bucket         = "cicd-homework2-tfstate"
+#     bucket         = "cicd-assignment-tfstate"
 #     key            = "swarm/terraform.tfstate"
 #     region         = "ap-southeast-2"
 #     encrypt        = true
-#     dynamodb_table = "cicd-homework2-tflocks"
+#     dynamodb_table = "cicd-assignment-tflocks"
 #   }
 # }
 #

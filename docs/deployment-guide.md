@@ -45,17 +45,17 @@ curl.exe http://127.0.0.1:5000/health
 ### 2.2 Building and Running with Docker Desktop
 ```powershell
 # 1. Build the production multi-stage image
-docker build -t cicd-homework2:local .
+docker build -t cicd-assignment:local .
 
 # 2. Run container as non-root user
-docker run -d --name cicd-test-app -p 5001:5000 -e APP_VERSION=2.0.0 cicd-homework2:local
+docker run -d --name cicd-test-app -p 5001:5000 -e APP_VERSION=2.0.0 cicd-assignment:local
 
 # 3. Test endpoints
 curl.exe http://127.0.0.1:5001/health
 curl.exe -I http://127.0.0.1:5001/
 
 # 4. Run local Trivy vulnerability scan
-docker run --rm -v //var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity HIGH,CRITICAL cicd-homework2:local
+docker run --rm -v //var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity HIGH,CRITICAL cicd-assignment:local
 
 # 5. Clean up container
 docker rm -f cicd-test-app
@@ -66,7 +66,7 @@ docker rm -f cicd-test-app
 ## 3. Amazon ECR Configuration
 
 The repository uses the private Amazon ECR registry:
-- **Registry URI:** `399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2`
+- **Registry URI:** `399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment`
 
 ### Authenticating and Pushing Manually (if testing from CLI):
 ```powershell
@@ -74,8 +74,8 @@ The repository uses the private Amazon ECR registry:
 aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com
 
 # Tag and push image
-docker tag cicd-homework2:local 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2:latest
-docker push 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2:latest
+docker tag cicd-assignment:local 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment:latest
+docker push 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment:latest
 ```
 
 ---
@@ -146,7 +146,7 @@ Argo CD will automatically create the `cicd-production` namespace, pull manifest
 
 ## 6. GitHub Actions Secrets Setup
 
-In your GitHub repository (`Chamroeun12/cicd-homework2`), go to **Settings > Secrets and variables > Actions** and configure:
+In your GitHub repository (`Chamroeun12/Assignment`), go to **Settings > Secrets and variables > Actions** and configure:
 
 | Secret Name | Description | Example / Format |
 | :--- | :--- | :--- |

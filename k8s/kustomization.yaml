@@ -10,5 +10,5 @@ resources:
   - service.yaml
 
 images:
-  - name: 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2
+  - name: 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment
     newTag: latest

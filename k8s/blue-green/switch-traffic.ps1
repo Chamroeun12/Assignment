@@ -5,7 +5,7 @@ param (
     [string]$TargetVersion,
     
     [string]$Namespace = "cicd-production",
-    [string]$ServiceName = "cicd-homework2-prod"
+    [string]$ServiceName = "cicd-assignment-prod"
 )
 
 Write-Host "=================================================================" -ForegroundColor Cyan
@@ -13,7 +13,7 @@ Write-Host "   BLUE-GREEN TRAFFIC CONTROLLER: Switching traffic to $TargetVersio
 Write-Host "=================================================================" -ForegroundColor Cyan
 
 # 1. Verify candidate Deployment readiness
-$deploymentName = "cicd-homework2-$TargetVersion"
+$deploymentName = "cicd-assignment-$TargetVersion"
 Write-Host "Checking rollout and readiness status for $deploymentName in namespace $Namespace..."
 kubectl rollout status deployment/$deploymentName -n $Namespace --timeout=60s
 
@@ -26,7 +26,7 @@ Write-Host "[OK] Candidate pods are Ready and healthy." -ForegroundColor Green
 
 # 2. Switch Service Selector
 Write-Host "Updating production service ($ServiceName) selector to version=$TargetVersion..."
-$patchJson = '{"spec":{"selector":{"app":"cicd-homework2","version":"' + $TargetVersion + '"}}}'
+$patchJson = '{"spec":{"selector":{"app":"cicd-assignment","version":"' + $TargetVersion + '"}}}'
 kubectl patch service $ServiceName -n $Namespace -p $patchJson
 
 if ($LASTEXITCODE -eq 0) {

@@ -55,7 +55,7 @@
 ### 3.2 GitHub Actions Cannot Push to ECR
 - **Root Cause:** Missing or invalid `AWS_ROLE_TO_ASSUME` or AWS access keys in repository secrets.
 - **Solution:**
-  Verify that GitHub Actions has permissions to assume your IAM role via OIDC trust policy. The repository name in the OIDC Subject must match `repo:Chamroeun12/cicd-homework2:*`.
+  Verify that GitHub Actions has permissions to assume your IAM role via OIDC trust policy. The repository name in the OIDC Subject must match `repo:Chamroeun12/Assignment:*`.
 
 ---
 
@@ -67,11 +67,11 @@
   1. Ensure the EKS Node Group IAM role (`aws_iam_role.node_role`) has the managed policy `arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly` attached.
   2. Check the exact image URI and tag:
      ```bash
-     kubectl describe pod -n cicd-production -l app=cicd-homework2
+     kubectl describe pod -n cicd-production -l app=cicd-assignment
      ```
   3. Confirm that the image tag actually exists in the ECR repository:
      ```bash
-     aws ecr describe-images --repository-name cicd-homework2 --region ap-southeast-2
+     aws ecr describe-images --repository-name cicd-assignment --region ap-southeast-2
      ```
 
 ### 4.2 Pod Status `CrashLoopBackOff`
@@ -79,7 +79,7 @@
 - **Solution:**
   Inspect the previous container logs:
   ```bash
-  kubectl logs -n cicd-production -l app=cicd-homework2 --previous
+  kubectl logs -n cicd-production -l app=cicd-assignment --previous
   ```
 
 ### 4.3 Readiness Probe Failing (Traffic Not Routing to Pod)
@@ -100,7 +100,7 @@
   - Make Git the authoritative control point: commit changes to `k8s/deployment.yaml` and let Argo CD sync.
   - Or temporarily disable self-healing during an emergency:
     ```bash
-    kubectl patch application cicd-homework2 -n argocd --type merge -p '{"spec":{"syncPolicy":{"automated":null}}}'
+    kubectl patch application cicd-assignment -n argocd --type merge -p '{"spec":{"syncPolicy":{"automated":null}}}'
     ```
 
 ### 5.2 Argo CD Application Shows "ComparisonError" or "Unknown Repo"
@@ -108,5 +108,5 @@
 - **Solution:**
   In Argo CD UI or CLI, add repository credentials:
   ```bash
-  argocd repo add https://github.com/Chamroeun12/cicd-homework2.git --username Chamroeun12 --password <GITHUB_PERSONAL_ACCESS_TOKEN>
+  argocd repo add https://github.com/Chamroeun12/Assignment.git --username Chamroeun12 --password <GITHUB_PERSONAL_ACCESS_TOKEN>
   ```

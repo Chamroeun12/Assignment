@@ -28,8 +28,8 @@ permissions:
 env:
   AWS_REGION: ap-southeast-2
   AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID || '399311815210' }}
-  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY || 'cicd-homework2' }}
-  APP_NAME: cicd-homework2
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY || 'cicd-assignment' }}
+  APP_NAME: cicd-assignment
 
 jobs:
   # =========================================================================

@@ -21,7 +21,7 @@ In a **GitOps-driven continuous delivery architecture** (where Argo CD continuou
 ```
 
 ### The "Self-Healing Conflict" Gotcha
-If an engineer executes a traditional `kubectl rollout undo deployment/cicd-homework2` while Argo CD `selfHeal: true` is enabled, Argo CD will detect that the cluster's live state has diverged from Git, treat the manual rollback as configuration drift, and **immediately overwrite your manual rollback with the bad image from Git**!
+If an engineer executes a traditional `kubectl rollout undo deployment/cicd-assignment` while Argo CD `selfHeal: true` is enabled, Argo CD will detect that the cluster's live state has diverged from Git, treat the manual rollback as configuration drift, and **immediately overwrite your manual rollback with the bad image from Git**!
 
 Therefore, this runbook defines two distinct procedures:
 1. **Standard GitOps Rollback (Recommended & Authoritative):** Reverts the image tag in Git, allowing Argo CD to reconcile gracefully.
@@ -61,14 +61,14 @@ git push origin main
 Argo CD detects the commit within seconds (or poll interval) and applies the stable manifest to Amazon EKS.
 To force instant synchronization via CLI:
 ```bash
-argocd app sync cicd-homework2 --prune
+argocd app sync cicd-assignment --prune
 ```
 
 ### Step 4: Verify Cluster Health
 Verify that the pods transition back to healthy status:
 ```bash
-kubectl rollout status deployment/cicd-homework2 -n cicd-production --timeout=60s
-kubectl get pods -n cicd-production -l app=cicd-homework2
+kubectl rollout status deployment/cicd-assignment -n cicd-production --timeout=60s
+kubectl get pods -n cicd-production -l app=cicd-assignment
 ```
 
 ---
@@ -80,21 +80,21 @@ Use this procedure when an outage is causing active user disruption and waiting 
 ### Step 1: Suspend Argo CD Automated Reconciliation
 Prevent Argo CD from overwriting the manual intervention:
 ```bash
-kubectl patch application cicd-homework2 -n argocd --type merge -p '{"spec":{"syncPolicy":{"automated":null}}}'
+kubectl patch application cicd-assignment -n argocd --type merge -p '{"spec":{"syncPolicy":{"automated":null}}}'
 ```
 
 ### Step 2: Execute Instant Kubernetes Rollout Undo
 ```bash
 # Check current revision history
-kubectl rollout history deployment/cicd-homework2 -n cicd-production
+kubectl rollout history deployment/cicd-assignment -n cicd-production
 
 # Roll back to the previous deployment revision
-kubectl rollout undo deployment/cicd-homework2 -n cicd-production
+kubectl rollout undo deployment/cicd-assignment -n cicd-production
 ```
 
 ### Step 3: Monitor Rollout Progress
 ```bash
-kubectl rollout status deployment/cicd-homework2 -n cicd-production --timeout=60s
+kubectl rollout status deployment/cicd-assignment -n cicd-production --timeout=60s
 ```
 
 ### Step 4: Validate Service Health
@@ -105,7 +105,7 @@ curl -I http://<SERVICE_PUBLIC_IP>/health
 ### Step 5: Post-Incident Git Synchronization
 Once the incident is resolved, update `k8s/deployment.yaml` in Git to match the running image tag, commit and push to Git, and re-enable Argo CD automated sync:
 ```bash
-kubectl patch application cicd-homework2 -n argocd --type merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}'
+kubectl patch application cicd-assignment -n argocd --type merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}'
 ```
 
 ---

@@ -10,9 +10,11 @@
 
 **Course:** Master of Science in Cloud Computing  
 **Author:** Chamroeun Saran (GitHub: [Chamroeun12](https://github.com/Chamroeun12))  
-**Repository:** [https://github.com/Chamroeun12/cicd-homework2](https://github.com/Chamroeun12/cicd-homework2)  
+**Repository:** [https://github.com/Chamroeun12/Assignment](https://github.com/Chamroeun12/Assignment)  
 **Target AWS Region:** Sydney (`ap-southeast-2`)  
-**Amazon ECR Registry:** `399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2`  
+**Amazon ECR Registry:** `399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment`  
+**Live Manager Public IP:** `3.104.55.68`  
+**Live Application URL:** [http://3.104.55.68/](http://3.104.55.68/)  
 **Rubric Evaluation:** Meets 100/100 Points Base + 5 Bonus Points (Telegram CI/CD Notifications)  
 
 ---
@@ -196,26 +198,26 @@ terraform plan
 terraform apply -auto-approve
 ```
 **Terraform Outputs Generated:**
-- `manager_public_ip`: Public IP of the Swarm Manager
-- `worker_public_ips`: Public IPs of Swarm Workers (Count = 2)
-- `application_url`: `http://<manager_public_ip>`
-- `application_health_url`: `http://<manager_public_ip>/health`
-- `cluster_topology_summary`: `1 Manager (Leader) + 2 Workers with Nginx Load Balancer`
+- `manager_public_ip`: `3.104.55.68` (Public IP of the Swarm Manager)
+- `worker_public_ips`: `["13.210.125.139", "16.176.134.119"]` (Public IPs of Swarm Workers)
+- `application_url`: `http://3.104.55.68`
+- `application_health_url`: `http://3.104.55.68/health`
+- `cluster_topology_summary`: `1 Manager (Leader: swarm-manager) + 2 Workers (swarm-worker1, swarm-worker2) with Nginx Load Balancer`
 
 ### Step 4.4: Docker Swarm Cluster Verification
 SSH into the Swarm Manager to verify all 3 nodes are active and ready:
 ```bash
-ssh -i <your-key.pem> ubuntu@<manager_public_ip>
+ssh -i chamroeunsaran.pem ubuntu@3.104.55.68
 
 # Verify cluster nodes (1 Manager + 2 Workers)
 docker node ls
 ```
 **Verified Node Topology:**
 ```
-ID                            HOSTNAME              STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
-udcxfpy46j4bg1tg6wjmo92zg *   cicd-swarm-manager    Ready     Active         Leader           26.1.4
-s92hf84kdmsla9103msle9291     cicd-swarm-worker-1   Ready     Active                          26.1.4
-m81kc92nx74la9284ksjd8172     cicd-swarm-worker-2   Ready     Active                          26.1.4
+ID                            HOSTNAME        STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+y23lo6y02dvb42iysgdz9jp42 *   swarm-manager   Ready     Active         Leader           29.9.2
+oa4p3gxokfz5z0hah3skrceal     swarm-worker1   Ready     Active                          29.9.2
+yvsp4qjaq9uehic2v3mq4osx1     swarm-worker2   Ready     Active                          29.9.2
 ```
 
 ### Step 4.5: Jenkins CI/CD Pipeline as Code
@@ -224,7 +226,7 @@ The `Jenkinsfile` is checked directly into the repository root:
 2. **Build & Test Stage:** Runs `flake8` and `pytest`; fails immediately if tests fail.
 3. **Security Scan Stage:** Runs `Trivy` container vulnerability scanner for HIGH and CRITICAL CVEs.
 4. **Push Stage:** Dynamic ECR authentication and tagging with `${BUILD_NUMBER}-${GIT_COMMIT.take(7)}` and `latest`.
-5. **Deploy Stage:** Executes `docker stack deploy --with-registry-auth -c docker-stack.yml cicd-homework2`.
+5. **Deploy Stage:** Executes `docker stack deploy --with-registry-auth -c docker-stack.yml cicd-assignment`.
 6. **Telegram Notifications (Extra Credit):** Dispatches automated success (✅) or failure (❌) alerts via `withCredentials`.
 
 ### Step 4.6: Multi-Service Stack Deployment & Verification
@@ -234,29 +236,29 @@ Verify the running services and tasks across the cluster:
 docker service ls
 
 # Verify task placement across worker nodes
-docker stack ps cicd-homework2
+docker stack ps cicd-assignment
 ```
 **Verified Stack Tasks:**
 ```
-ID             NAME                       MODE         REPLICAS   IMAGE                                                              PORTS
-78kdm39slx29   cicd-homework2_web         replicated   2/2        399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2   
-91jd82msla01   cicd-homework2_nginx       replicated   1/1        nginx:alpine                                                       *:80->80/tcp
+ID             NAME                    MODE         REPLICAS   IMAGE                                                              PORTS
+wht0e7rprc8v   cicd-assignment_web     replicated   2/2        399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment:latest   
+fhba84he9rso   cicd-assignment_nginx   replicated   1/1        nginx:alpine                                                       *:80->80/tcp
 ```
 
 ### Step 4.7: Live Nginx Load Balancer Route Testing
 Test each public route exposed by the Nginx reverse proxy:
 ```bash
 # 1. Main Application Web Interface
-curl -i http://<manager_public_ip>/
+curl -i http://3.104.55.68/
 
 # 2. Application Healthcheck Endpoint
-curl -s http://<manager_public_ip>/health
+curl -s http://3.104.55.68/health
 
 # 3. Backend Service API Route
-curl -s http://<manager_public_ip>/api/info
+curl -s http://3.104.55.68/api/info
 
 # 4. Nginx Load Balancer Health
-curl -s http://<manager_public_ip>/nginx-health
+curl -s http://3.104.55.68/nginx-health
 ```
 
 ### Step 4.8: Zero-Downtime Rolling Update Demonstration
@@ -264,7 +266,7 @@ Docker Swarm executes rolling updates with zero dropped requests:
 - Configuration: `order: start-first`, `parallelism: 1`, `delay: 10s`, `failure_action: rollback`.
 - To trigger an update:
 ```bash
-docker service update --image <ECR_IMAGE>:new cicd-homework2_web
+docker service update --image 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment:latest cicd-assignment_web
 ```
 - A concurrent curl test confirms that 100% of HTTP requests return HTTP 200 during the update process.
 

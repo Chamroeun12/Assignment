@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cicd-homework2-green
+  name: cicd-assignment-green
   namespace: cicd-production
   labels:
-    app: cicd-homework2
+    app: cicd-assignment
     version: green
     environment: production
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: cicd-homework2
+      app: cicd-assignment
       version: green
   template:
     metadata:
       labels:
-        app: cicd-homework2
+        app: cicd-assignment
         version: green
     spec:
       securityContext:
@@ -25,7 +25,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: web-app
-          image: 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2:2.0.0
+          image: 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment:2.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

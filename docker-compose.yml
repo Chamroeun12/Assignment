@@ -1,14 +1,14 @@
 version: '3.8'
 
-# Multi-service local development stack for CI/CD Homework 2
+# Multi-service local development stack for CI/CD Assignment
 # Usage: docker compose up --build -d
 services:
   web:
     build:
       context: .
       dockerfile: Dockerfile
-    image: cicd-homework2-web:local
-    container_name: cicd-homework2-web
+    image: cicd-assignment-web:local
+    container_name: cicd-assignment-web
     restart: unless-stopped
     environment:
       - APP_VERSION=1.0.0-dev
@@ -26,8 +26,8 @@ services:
     build:
       context: ./nginx
       dockerfile: Dockerfile
-    image: cicd-homework2-nginx:local
-    container_name: cicd-homework2-nginx
+    image: cicd-assignment-nginx:local
+    container_name: cicd-assignment-nginx
     restart: unless-stopped
     ports:
       - "80:80"

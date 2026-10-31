@@ -1,24 +1,24 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: cicd-homework2-alerts
+  name: cicd-assignment-alerts
   namespace: cicd-production
   labels:
     role: alert-rules
     release: prometheus
 spec:
   groups:
-    - name: cicd-homework2.rules
+    - name: cicd-assignment.rules
       rules:
         # Alert when any replica fails or pods are down
         - alert: PodNotReady
-          expr: kube_deployment_status_replicas_available{deployment="cicd-homework2"} < 1
+          expr: kube_deployment_status_replicas_available{deployment="cicd-assignment"} < 1
           for: 1m
           labels:
             severity: critical
           annotations:
             summary: "CICD Production Pods are unavailable"
-            description: "No available replicas detected for deployment cicd-homework2 for more than 1 minute."
+            description: "No available replicas detected for deployment cicd-assignment for more than 1 minute."
 
         # Alert on CrashLoopBackOff or rapid restarts
         - alert: PodCrashLooping

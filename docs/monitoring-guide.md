@@ -35,12 +35,12 @@ The ServiceMonitor resource (`monitoring/prometheus/servicemonitor.yaml`) direct
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: cicd-homework2-monitor
+  name: cicd-assignment-monitor
   namespace: cicd-production
 spec:
   selector:
     matchLabels:
-      app: cicd-homework2
+      app: cicd-assignment
   endpoints:
     - port: http
       path: /health
@@ -60,7 +60,7 @@ Configured alerts notify the DevOps team before user impact occurs:
 The pre-configured dashboard JSON is located at `monitoring/grafana/dashboard-cicd.json`.
 
 ### Key Metrics Monitored:
-1. **Healthy Pod Replicas:** `kube_deployment_status_replicas_available{deployment="cicd-homework2"}`
+1. **Healthy Pod Replicas:** `kube_deployment_status_replicas_available{deployment="cicd-assignment"}`
 2. **Total Restarts:** `sum(kube_pod_container_status_restarts_total{container="web-app"})`
 3. **Pod CPU Utilization (mCPU):** `sum(rate(container_cpu_usage_seconds_total{container="web-app"}[2m])) by (pod) * 1000`
 4. **Pod Memory Working Set (MiB):** `sum(container_memory_working_set_bytes{container="web-app"}) by (pod) / 1024 / 1024`

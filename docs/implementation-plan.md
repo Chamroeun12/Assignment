@@ -2,7 +2,7 @@
 
 **Course:** Master's Degree in Cloud Computing  
 **Author:** Chamroeun Saran (GitHub: [Chamroeun12](https://github.com/Chamroeun12))  
-**Project:** CI/CD Homework & Assignment — Commit to Production  
+**Project:** CI/CD Assignment & Assignment — Commit to Production  
 **Date:** October 26, 2026  
 **Status:** PHASE 0 COMPLETED — PROCEEDING TO IMPLEMENTATION  
 
@@ -60,7 +60,7 @@ The objective of this assignment is to design, implement, document, and verify a
 ### 2.2 AWS Infrastructure Discovery
 - **AWS Account ID (from prior assignment):** `399311815210`
 - **Target AWS Region:** `ap-southeast-2` (Sydney)
-- **Container Registry (ECR):** `399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2`
+- **Container Registry (ECR):** `399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment`
 - **EC2 Instance:** User confirmed an EC2 instance is running; previous dynamic IP entries timed out over SSH port 22 (pending security group or fresh IP verification).
 - **Target Kubernetes Cluster:** Amazon EKS. Per grading rules and financial safety guidelines, billable EKS clusters, NAT gateways, and Application Load Balancers will NOT be auto-created without explicit approval. Comprehensive, validated, and executable Terraform / manifests are provided.
 

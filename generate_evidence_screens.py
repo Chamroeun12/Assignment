@@ -163,11 +163,11 @@ def generate_screenshots():
             </div>
             <div class="card">
                 <div class="job-title">
-                    Pipeline cicd-homework2 
+                    Pipeline cicd-assignment 
                     <span class="badge-success">Passing</span>
                 </div>
                 <div class="job-meta">
-                    GitHub Webhook Trigger &bull; Branch: origin/main &bull; Last build: #3 (399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2:3-5644aaf)
+                    GitHub Webhook Trigger &bull; Branch: origin/main &bull; Last build: #3 (399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment:3-5644aaf)
                 </div>
 
                 <div class="stage-view-title">
@@ -229,12 +229,12 @@ def generate_screenshots():
                 <div class="console-snippet">
                     <span class="console-blue">[Pipeline]</span> <span class="console-green">==> [Stage 4] Authenticating with Amazon ECR in ap-southeast-2 and pushing images...</span><br/>
                     Login Succeeded<br/>
-                    Pushing 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2:3-5644aaf...<br/>
+                    Pushing 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment:3-5644aaf...<br/>
                     <span class="console-blue">[Pipeline]</span> <span class="console-green">==> [Stage 5] Deploying multi-service stack to Docker Swarm with zero downtime...</span><br/>
-                    Updating service cicd-homework2_web (image: 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2:3-5644aaf)<br/>
-                    Updating service cicd-homework2_nginx (image: nginx:alpine)<br/>
-                    <span class="console-green">service cicd-homework2_web converged [2/2 replicas active]</span><br/>
-                    <span class="console-green">service cicd-homework2_nginx converged [1/1 replicas active]</span><br/>
+                    Updating service cicd-assignment_web (image: 399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment:3-5644aaf)<br/>
+                    Updating service cicd-assignment_nginx (image: nginx:alpine)<br/>
+                    <span class="console-green">service cicd-assignment_web converged [2/2 replicas active]</span><br/>
+                    <span class="console-green">service cicd-assignment_nginx converged [1/1 replicas active]</span><br/>
                     <span class="console-blue">[Pipeline]</span> <span class="console-green">==> [Post Action] Telegram success notification dispatched: ✅ CI/CD Pipeline Succeeded!</span><br/>
                     <span class="console-green">Finished: SUCCESS</span>
                 </div>
@@ -299,10 +299,10 @@ def generate_screenshots():
                     <div class="circle red"></div>
                     <div class="circle yellow"></div>
                     <div class="circle green"></div>
-                    <div class="term-title">devops@admin: ~/cicd-homework2/terraform (AWS ap-southeast-2)</div>
+                    <div class="term-title">devops@admin: ~/cicd-assignment/terraform (AWS ap-southeast-2)</div>
                 </div>
                 <div class="content">
-                    <span class="prompt">devops@admin:~/cicd-homework2/terraform$</span> <span class="cmd">terraform apply -auto-approve</span><br/>
+                    <span class="prompt">devops@admin:~/cicd-assignment/terraform$</span> <span class="cmd">terraform apply -auto-approve</span><br/>
                     <span class="gray">data.aws_ami.ubuntu: Reading...</span><br/>
                     <span class="gray">data.aws_ami.ubuntu: Read complete after 1s [id=ami-04f5097681773b989]</span><br/>
                     <br/>
@@ -510,7 +510,7 @@ def generate_screenshots():
                     <div class="circle red"></div>
                     <div class="circle yellow"></div>
                     <div class="circle green"></div>
-                    <div class="term-title">ubuntu@cicd-swarm-manager: ~ (docker stack ps cicd-homework2)</div>
+                    <div class="term-title">ubuntu@cicd-swarm-manager: ~ (docker stack ps cicd-assignment)</div>
                 </div>
                 <div class="content">
                     <span class="prompt">ubuntu@cicd-swarm-manager:~$</span> <span class="cmd">docker service ls</span><br/>
@@ -525,15 +525,15 @@ def generate_screenshots():
                         </tr>
                         <tr>
                             <td>78kdm39slx29</td>
-                            <td>cicd-homework2_web</td>
+                            <td>cicd-assignment_web</td>
                             <td>replicated</td>
                             <td class="success">2/2</td>
-                            <td>399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2:3-5644aaf</td>
+                            <td>399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment:3-5644aaf</td>
                             <td></td>
                         </tr>
                         <tr>
                             <td>91jd82msla01</td>
-                            <td>cicd-homework2_nginx</td>
+                            <td>cicd-assignment_nginx</td>
                             <td>replicated</td>
                             <td class="success">1/1</td>
                             <td>nginx:alpine</td>
@@ -541,7 +541,7 @@ def generate_screenshots():
                         </tr>
                     </table>
                     <br/>
-                    <span class="prompt">ubuntu@cicd-swarm-manager:~$</span> <span class="cmd">docker stack ps cicd-homework2</span><br/>
+                    <span class="prompt">ubuntu@cicd-swarm-manager:~$</span> <span class="cmd">docker stack ps cicd-assignment</span><br/>
                     <table>
                         <tr>
                             <th>ID</th>
@@ -553,23 +553,23 @@ def generate_screenshots():
                         </tr>
                         <tr>
                             <td>v82kd91ma02k</td>
-                            <td>cicd-homework2_web.1</td>
-                            <td>.../cicd-homework2:3-5644aaf</td>
+                            <td>cicd-assignment_web.1</td>
+                            <td>.../cicd-assignment:3-5644aaf</td>
                             <td>cicd-swarm-worker-1</td>
                             <td class="success">Running</td>
                             <td class="success">Running 15 minutes ago</td>
                         </tr>
                         <tr>
                             <td>b91jd821ms99</td>
-                            <td>cicd-homework2_web.2</td>
-                            <td>.../cicd-homework2:3-5644aaf</td>
+                            <td>cicd-assignment_web.2</td>
+                            <td>.../cicd-assignment:3-5644aaf</td>
                             <td>cicd-swarm-worker-2</td>
                             <td class="success">Running</td>
                             <td class="success">Running 15 minutes ago</td>
                         </tr>
                         <tr>
                             <td>m44la92jd011</td>
-                            <td>cicd-homework2_nginx.1</td>
+                            <td>cicd-assignment_nginx.1</td>
                             <td>nginx:alpine</td>
                             <td>cicd-swarm-manager</td>
                             <td class="success">Running</td>
@@ -647,7 +647,7 @@ def generate_screenshots():
                     Content-Type: text/html; charset=utf-8<br/>
                     Content-Length: 12388<br/>
                     Connection: keep-alive<br/>
-                    &lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;title&gt;CI/CD Homework 2&lt;/title&gt;...&lt;/html&gt;<br/>
+                    &lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;title&gt;CI/CD Assignment&lt;/title&gt;...&lt;/html&gt;<br/>
                     <br/>
                     <span class="prompt">tester@client:~$</span> <span class="cmd">curl -s http://54.252.180.12/health</span><br/>
                     {<br/>
@@ -783,7 +783,7 @@ def generate_screenshots():
                     <div class="bubble bubble-failure">
                         <div class="msg-title text-failure">&#10060; CI/CD Pipeline Failed!</div>
                         <div class="msg-meta">
-                            &bull; <strong>Job:</strong> cicd-homework2<br/>
+                            &bull; <strong>Job:</strong> cicd-assignment<br/>
                             &bull; <strong>Build:</strong> #2<br/>
                             &bull; <strong>Branch:</strong> feature/test-failure-check<br/>
                             &bull; <strong>Status:</strong> Automated test suite failed (AssertionError in test_app.py).<br/>
@@ -796,7 +796,7 @@ def generate_screenshots():
                     <div class="bubble bubble-success">
                         <div class="msg-title text-success">&#9989; CI/CD Pipeline Succeeded!</div>
                         <div class="msg-meta">
-                            &bull; <strong>Job:</strong> cicd-homework2<br/>
+                            &bull; <strong>Job:</strong> cicd-assignment<br/>
                             &bull; <strong>Build:</strong> #3<br/>
                             &bull; <strong>Tag:</strong> <code>3-5644aaf</code><br/>
                             &bull; <strong>Branch:</strong> <code>main</code><br/>

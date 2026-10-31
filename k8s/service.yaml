@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: cicd-homework2-svc
+  name: cicd-assignment-svc
   namespace: cicd-production
   labels:
-    app: cicd-homework2
+    app: cicd-assignment
     environment: production
-    app.kubernetes.io/name: cicd-homework2
+    app.kubernetes.io/name: cicd-assignment
     app.kubernetes.io/instance: production
     app.kubernetes.io/managed-by: argocd
   annotations:
@@ -16,7 +16,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    app: cicd-homework2
+    app: cicd-assignment
   ports:
     - name: http
       port: 80

@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: cicd-homework2-config
+  name: cicd-assignment-config
   namespace: cicd-production
   labels:
-    app: cicd-homework2
+    app: cicd-assignment
     environment: production
 data:
   PORT: "5000"

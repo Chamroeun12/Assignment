@@ -225,7 +225,7 @@ def build_pdf_report():
             </div>
 
             <div class="meta-bar">
-                <div><strong>GitHub Repo:</strong> github.com/Chamroeun12/cicd-homework2</div>
+                <div><strong>GitHub Repo:</strong> github.com/Chamroeun12/Assignment</div>
                 <div><strong>AWS Target:</strong> ap-southeast-2 (Sydney)</div>
                 <div><strong>Architecture:</strong> 1 Manager + 2 Workers</div>
                 <div><strong>Container Registry:</strong> Amazon ECR Private</div>
@@ -238,7 +238,7 @@ def build_pdf_report():
                 <strong>Course:</strong> Master of Science in Cloud Computing &bull; 
                 <strong>Project Title:</strong> Multi-Service Cloud Deployment with Docker Swarm &amp; Jenkins on AWS EC2 &bull; 
                 <strong>Date:</strong> October 2026 &bull; 
-                <strong>Submission URL:</strong> <code>https://github.com/Chamroeun12/cicd-homework2</code>
+                <strong>Submission URL:</strong> <code>https://github.com/Chamroeun12/Assignment</code>
             </p>
 
             <h2>2. Introduction</h2>
@@ -310,7 +310,7 @@ def build_pdf_report():
                 <li><strong>Stage 2 (Build &amp; Test):</strong> Runs <code>flake8</code> PEP8 linter and <code>pytest -v --cov=app tests/</code>; fails immediately if tests fail.</li>
                 <li><strong>Stage 3 (Security Scan):</strong> Container vulnerability scan with <code>Trivy</code> filtering for HIGH and CRITICAL CVEs.</li>
                 <li><strong>Stage 4 (Push to ECR):</strong> Authenticates dynamically via <code>aws ecr get-login-password</code> and pushes versioned and latest tags.</li>
-                <li><strong>Stage 5 (Deploy to Swarm):</strong> Executes <code>docker stack deploy --with-registry-auth -c docker-stack.yml cicd-homework2</code>.</li>
+                <li><strong>Stage 5 (Deploy to Swarm):</strong> Executes <code>docker stack deploy --with-registry-auth -c docker-stack.yml cicd-assignment</code>.</li>
             </ul>
 
             <div class="img-card">
@@ -479,7 +479,7 @@ def build_docx_report():
     p_meta.add_run("Author: ").bold = True
     p_meta.add_run("Chamroeun Saran (GitHub: Chamroeun12)\n")
     p_meta.add_run("Repository: ").bold = True
-    p_meta.add_run("https://github.com/Chamroeun12/cicd-homework2\n")
+    p_meta.add_run("https://github.com/Chamroeun12/Assignment\n")
     p_meta.add_run("Architecture Stack: ").bold = True
     p_meta.add_run("GitHub, Jenkins, Terraform, Docker, Docker Swarm (1 Manager + 2 Workers), Nginx LB, AWS EC2, Telegram API\n")
     p_meta.add_run("Date: ").bold = True
@@ -493,7 +493,7 @@ def build_docx_report():
     p1.add_run("Target AWS Region: ").bold = True
     p1.add_run("ap-southeast-2 (Sydney)\n")
     p1.add_run("Amazon ECR URI: ").bold = True
-    p1.add_run("399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2\n")
+    p1.add_run("399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment\n")
     p1.add_run("Rubric Compliance: ").bold = True
     p1.add_run("100/100 Points Base + 5 Bonus Points (Telegram CI/CD Notifications)")
 

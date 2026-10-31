@@ -13,7 +13,7 @@ The following Mermaid diagram visualizes the complete **10-Stage Production CI/C
 ```mermaid
 flowchart TD
     subgraph STAGE1 ["Stage 1: Code"]
-        A[Developer Commit & Push] --> B[GitHub Repository Chamroeun12/cicd-homework2]
+        A[Developer Commit & Push] --> B[GitHub Repository Chamroeun12/Assignment]
     end
 
     subgraph STAGE2 ["Stage 2: Build & Test"]
@@ -99,7 +99,7 @@ flowchart TD
 - **Role:** Private, secure artifact storage.
 - **Implementation:**
   - Lightweight multi-stage Docker build (`Dockerfile`) running as unprivileged user `appuser:1000`.
-  - Immutable image tagging: `${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/cicd-homework2:${GIT_COMMIT_SHA}` plus `:latest`.
+  - Immutable image tagging: `${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/cicd-assignment:${GIT_COMMIT_SHA}` plus `:latest`.
   - Authentication via IAM OIDC federation (`aws-actions/configure-aws-credentials`).
 
 ### Stage 5: Update Kubernetes Configuration (GitOps Manifest)
@@ -153,7 +153,7 @@ flowchart TD
 | **3** | Quality & Security | `sonar-project.properties`, `.github/workflows/ci-cd.yml` | `docker run aquasec/trivy:latest image` |
 | **4** | Build & Push Docker | `Dockerfile`, `.dockerignore`, `.github/workflows/ci-cd.yml` | `docker build`, `aws ecr describe-images` |
 | **5** | Update K8s Manifest | `k8s/kustomization.yaml`, `k8s/deployment.yaml` | `git diff k8s/deployment.yaml` |
-| **6** | Sync with EKS | `k8s/argocd/application.yaml` | `argocd app get cicd-homework2` |
+| **6** | Sync with EKS | `k8s/argocd/application.yaml` | `argocd app get cicd-assignment` |
 | **7** | Deploy to Pods | `k8s/namespace.yaml`, `k8s/deployment.yaml`, `k8s/service.yaml` | `kubectl get pods -n cicd-production` |
 | **8** | Deployment Strategy | `k8s/deployment.yaml`, `k8s/blue-green/` | `kubectl rollout status`, `switch-traffic.ps1` |
 | **9** | Monitoring | `monitoring/prometheus/`, `monitoring/grafana/`, `monitoring/cloudwatch/` | Prometheus targets, Grafana dashboard, CloudWatch logs |
