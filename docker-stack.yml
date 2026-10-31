@@ -1,10 +1,10 @@
 version: '3.8'
 
 # Docker Swarm production stack definition
-# Deploy via: docker stack deploy --with-registry-auth -c docker-stack.yml cicd-homework2
+# Deploy via: docker stack deploy --with-registry-auth -c docker-stack.yml cicd-assignment
 services:
   web:
-    image: ${ECR_REGISTRY:-399311815210.dkr.ecr.ap-southeast-2.amazonaws.com}/${ECR_REPO:-cicd-homework2}:${IMAGE_TAG:-latest}
+    image: ${ECR_REGISTRY:-399311815210.dkr.ecr.ap-southeast-2.amazonaws.com}/${ECR_REPO:-cicd-assignment}:${IMAGE_TAG:-latest}
     environment:
       - APP_VERSION=${IMAGE_TAG:-1.0.0}
       - PORT=5000

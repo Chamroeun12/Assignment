@@ -623,7 +623,7 @@ def create_presentation():
         ("Step 4: Docker Swarm Cluster via SSH", [
             "ssh -i chamroeunsaran.pem ubuntu@3.104.55.68",
             "Run 'sudo docker service ls' to demonstrate 2/2 backend and 1/1 nginx replicas.",
-            "Run 'sudo docker stack ps cicd-homework2' showing distributed tasks across cluster nodes."
+            "Run 'sudo docker stack ps cicd-assignment' showing distributed tasks across cluster nodes."
         ])
     ]
 

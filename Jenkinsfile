@@ -4,9 +4,9 @@ pipeline {
     environment {
         AWS_ACCOUNT_ID = '399311815210'
         AWS_REGION     = 'ap-southeast-2'
-        ECR_REPO       = 'cicd-homework2'
+        ECR_REPO       = 'cicd-assignment'
         ECR_REGISTRY   = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-        STACK_NAME     = 'cicd-homework2'
+        STACK_NAME     = 'cicd-assignment'
         IMAGE_TAG      = "${BUILD_NUMBER}"
     }
 

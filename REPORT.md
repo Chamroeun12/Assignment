@@ -123,7 +123,7 @@ Authored declaratively in `Jenkinsfile`:
 2. **Stage 2 (Build & Test):** Executes PEP8 linter (`flake8`) and test suite (`pytest -v --cov=app tests/`). Pipeline terminates immediately if tests fail.
 3. **Stage 3 (Security Scan):** Executes container vulnerability scanning with `Trivy` for HIGH and CRITICAL vulnerabilities.
 4. **Stage 4 (Push to ECR):** Authenticates via `aws ecr get-login-password` and publishes both versioned and `latest` tags to Amazon ECR.
-5. **Stage 5 (Deploy to Swarm):** Deploys stack with `docker stack deploy --with-registry-auth -c docker-stack.yml cicd-homework2` and monitors convergence.
+5. **Stage 5 (Deploy to Swarm):** Deploys stack with `docker stack deploy --with-registry-auth -c docker-stack.yml cicd-assignment` and monitors convergence.
 
 ![Jenkins Pipeline Stage View](screenshots/jenkins_pipeline_stages.png)
 
@@ -146,8 +146,8 @@ Services are deployed via `docker-stack.yml` with 2 backend application replicas
 
 ```
 ID             NAME                       MODE         REPLICAS   IMAGE                                                              PORTS
-78kdm39slx29   cicd-homework2_web         replicated   2/2        399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-homework2   
-91jd82msla01   cicd-homework2_nginx       replicated   1/1        nginx:alpine                                                       *:80->80/tcp
+78kdm39slx29   cicd-assignment_web        replicated   2/2        399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment   
+91jd82msla01   cicd-assignment_nginx      replicated   1/1        nginx:alpine                                                       *:80->80/tcp
 ```
 
 ---
