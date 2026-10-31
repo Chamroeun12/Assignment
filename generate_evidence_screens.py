@@ -661,7 +661,7 @@ def generate_screenshots():
                     &nbsp;&nbsp;<span class="cyan">"cluster"</span>: <span class="yellow">"docker-swarm"</span>,<br/>
                     &nbsp;&nbsp;<span class="cyan">"hostname"</span>: <span class="yellow">"f82da910cb"</span>,<br/>
                     &nbsp;&nbsp;<span class="cyan">"runtime"</span>: <span class="yellow">"python-flask"</span>,<br/>
-                    &nbsp;&nbsp;<span class="cyan">"service"</span>: <span class="green">"cicd-homework2-backend"</span>,<br/>
+                    &nbsp;&nbsp;<span class="cyan">"service"</span>: <span class="green">"cicd-assignment-backend"</span>,<br/>
                     &nbsp;&nbsp;<span class="cyan">"version"</span>: <span class="yellow">"3-5644aaf"</span><br/>
                     }<br/>
                     <br/>

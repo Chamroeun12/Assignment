@@ -85,3 +85,4 @@ ehthumbs.db
 !REPORT.pdf
 *.png
 !screenshots/*.png
+*.mp4

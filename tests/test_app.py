@@ -56,7 +56,7 @@ def test_api_info_endpoint(client):
     assert response.status_code == 200
     assert response.content_type == "application/json"
     data = json.loads(response.data)
-    assert data.get("service") == "cicd-homework2-backend"
+    assert data.get("service") == "cicd-assignment-backend"
     assert "version" in data
     assert "hostname" in data
     assert data.get("cluster") == "docker-swarm"

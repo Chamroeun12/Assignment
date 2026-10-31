@@ -31,7 +31,7 @@ def health():
 @app.route("/api/info")
 def api_info():
     return jsonify({
-        "service": "cicd-homework2-backend",
+        "service": "cicd-assignment-backend",
         "version": APP_VERSION,
         "hostname": socket.gethostname(),
         "runtime": "python-flask",

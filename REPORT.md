@@ -168,7 +168,7 @@ Live verification proves Nginx correctly terminates port 80 and load-balances ac
 
 1. **Frontend Web UI (`GET /`):** HTTP 200 OK with rendered dashboard.
 2. **Application Health (`GET /health`):** HTTP 200 OK returning `{"hostname": "a19b24cd8e", "status": "healthy", "version": "3-5644aaf"}`.
-3. **Backend Service API (`GET /api/info`):** HTTP 200 OK returning `{"cluster": "docker-swarm", "hostname": "f82da910cb", "runtime": "python-flask", "service": "cicd-homework2-backend", "version": "3-5644aaf"}`.
+3. **Backend Service API (`GET /api/info`):** HTTP 200 OK returning `{"cluster": "docker-swarm", "hostname": "f82da910cb", "runtime": "python-flask", "service": "cicd-assignment-backend", "version": "3-5644aaf"}`.
 4. **Load Balancer Health (`GET /nginx-health`):** HTTP 200 OK confirming Nginx is operating cleanly.
 
 ### 5.3 Zero-Downtime Rolling Update Demonstration
