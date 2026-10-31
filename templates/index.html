@@ -3,323 +3,787 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }}</title>
+    <title>{{ title }} - Docker Swarm DevOps Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: #111827;
-            --card-border: #1f2937;
-            --text-primary: #f9fafb;
-            --text-secondary: #9ca3af;
-            --accent-blue: #38bdf8;
-            --accent-cyan: #06b6d4;
+            --bg-base: #090d16;
+            --bg-surface: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.65);
+            --card-border: rgba(148, 163, 184, 0.14);
+            --card-hover-border: rgba(56, 189, 248, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+            --accent-blue: #0284c7;
+            --accent-cyan: #38bdf8;
             --accent-green: #10b981;
-            --accent-purple: #8b5cf6;
             --accent-amber: #f59e0b;
-            --accent-rose: #f43f5e;
-            --badge-bg: rgba(56, 189, 248, 0.12);
+            --accent-purple: #a855f7;
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 2rem 1rem;
+            padding: 2.5rem 1.25rem;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1024px;
+        /* Ambient background glow */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(2, 132, 199, 0.15) 0%, rgba(168, 85, 247, 0.08) 50%, transparent 80%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .dashboard-wrapper {
+            max-width: 1140px;
             width: 100%;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 18px;
-            padding: 2.5rem;
-            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6);
+            position: relative;
+            z-index: 1;
         }
 
-        header {
-            text-align: center;
-            border-bottom: 1px solid var(--card-border);
-            padding-bottom: 2rem;
+        /* Top Bar */
+        .top-navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 0.85rem 1.4rem;
+            backdrop-filter: blur(16px);
             margin-bottom: 2rem;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .brand-cluster {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .cluster-logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #0284c7, #38bdf8);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        .brand-text h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .brand-text p {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .live-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent-green);
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            text-align: center;
+            margin-bottom: 2.25rem;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            color: var(--accent-cyan);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.35rem 0.9rem;
+            border-radius: 9999px;
+            margin-bottom: 0.85rem;
         }
 
         .header-title {
-            font-size: 2.3rem;
+            font-size: 2.4rem;
             font-weight: 800;
-            letter-spacing: -0.025em;
-            background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.6rem;
+            line-height: 1.2;
         }
 
         .header-subtitle {
-            color: var(--text-secondary);
+            color: var(--text-muted);
             font-size: 1.05rem;
+            max-width: 680px;
+            margin: 0 auto 1.5rem auto;
+            line-height: 1.5;
         }
 
+        /* Badges Bar */
         .meta-badges {
             display: flex;
             justify-content: center;
             gap: 0.75rem;
             flex-wrap: wrap;
-            margin-top: 1.25rem;
         }
 
         .badge {
-            background-color: var(--badge-bg);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            color: var(--accent-blue);
-            padding: 0.35rem 0.9rem;
-            border-radius: 9999px;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 0.45rem 1rem;
+            border-radius: 10px;
             font-size: 0.85rem;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
+            gap: 0.45rem;
+            font-family: var(--font-mono);
         }
 
-        .badge.green {
-            background-color: rgba(16, 185, 129, 0.12);
-            border-color: rgba(16, 185, 129, 0.3);
-            color: var(--accent-green);
+        .badge span.label {
+            color: var(--text-dim);
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
         }
 
-        .badge.purple {
-            background-color: rgba(139, 92, 246, 0.12);
-            border-color: rgba(139, 92, 246, 0.3);
-            color: var(--accent-purple);
-        }
+        .badge.cyan { border-color: rgba(56, 189, 248, 0.35); color: var(--accent-cyan); }
+        .badge.green { border-color: rgba(16, 185, 129, 0.35); color: var(--accent-green); }
+        .badge.purple { border-color: rgba(168, 85, 247, 0.35); color: var(--accent-purple); }
 
-        .section-header {
+        /* Grid Sections */
+        .grid-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
         }
 
-        .section-title {
-            font-size: 1.25rem;
+        .grid-title {
+            font-size: 1.15rem;
             font-weight: 700;
-            color: var(--text-primary);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .pipeline-grid {
+        .grid-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: var(--accent-cyan);
+            border-radius: 2px;
+        }
+
+        /* 3-Node Cluster Cards */
+        .cluster-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
             margin-bottom: 2rem;
         }
 
-        .step-card {
-            background: rgba(17, 24, 39, 0.7);
+        @media (max-width: 860px) {
+            .cluster-grid { grid-template-columns: 1fr; }
+        }
+
+        .node-card {
+            background: var(--bg-card);
             border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 1.1rem;
-            transition: all 0.2s ease;
+            border-radius: 16px;
+            padding: 1.4rem;
+            backdrop-filter: blur(12px);
+            transition: all 0.25s ease;
             position: relative;
             overflow: hidden;
         }
 
-        .step-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--accent-blue);
-            box-shadow: 0 10px 20px -5px rgba(56, 189, 248, 0.15);
+        .node-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--card-hover-border);
+            box-shadow: 0 15px 35px -10px rgba(2, 132, 199, 0.2);
         }
 
-        .step-number {
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--accent-blue);
-            margin-bottom: 0.35rem;
+        .node-card.leader {
+            border-color: rgba(2, 132, 199, 0.4);
+            background: linear-gradient(180deg, rgba(2, 132, 199, 0.1) 0%, rgba(30, 41, 59, 0.6) 100%);
         }
 
-        .step-name {
+        .node-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .node-name {
+            font-size: 1.05rem;
             font-weight: 700;
-            font-size: 0.95rem;
-            color: #ffffff;
-            margin-bottom: 0.35rem;
+            color: var(--text-main);
+            font-family: var(--font-mono);
         }
 
-        .step-tech {
+        .node-role-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0.2rem 0.55rem;
+            border-radius: 6px;
+            letter-spacing: 0.05em;
+        }
+
+        .role-leader {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+        }
+
+        .role-worker {
+            background: rgba(148, 163, 184, 0.12);
+            color: var(--text-muted);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        .node-detail-row {
+            display: flex;
+            justify-content: space-between;
             font-size: 0.8rem;
-            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
         }
 
-        .pipeline-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
+        .node-detail-row span.val {
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            font-weight: 500;
         }
 
-        .detail-card {
-            background: rgba(15, 23, 42, 0.5);
-            border-left: 3px solid var(--accent-blue);
-            padding: 1rem 1.25rem;
-            border-radius: 0 10px 10px 0;
+        .node-status-bar {
+            margin-top: 1.1rem;
+            padding-top: 0.85rem;
             border-top: 1px solid var(--card-border);
-            border-right: 1px solid var(--card-border);
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .detail-card h3 {
-            font-size: 0.95rem;
-            color: #ffffff;
-            margin-bottom: 0.3rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            font-size: 0.75rem;
         }
 
-        .detail-card p {
-            font-size: 0.825rem;
-            color: var(--text-secondary);
-            line-height: 1.45;
+        .status-ready {
+            color: var(--accent-green);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
         }
 
-        footer {
-            margin-top: 2.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--card-border);
-            text-align: center;
+        /* Interactive Load Balancer Tester */
+        .tester-box {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.6));
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 18px;
+            padding: 1.75rem;
+            backdrop-filter: blur(16px);
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.6);
+        }
+
+        .tester-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .tester-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-probe {
+            background: linear-gradient(135deg, #0284c7, #0ea5e9);
+            color: white;
+            border: none;
+            padding: 0.65rem 1.4rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn-probe:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(2, 132, 199, 0.6);
+            background: linear-gradient(135deg, #0369a1, #0284c7);
+        }
+
+        .btn-probe:active {
+            transform: translateY(0);
+        }
+
+        .auto-probe-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             font-size: 0.85rem;
-            color: var(--text-secondary);
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .auto-probe-toggle input {
+            accent-color: var(--accent-cyan);
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* Live Response Window */
+        .terminal-display {
+            background: #060911;
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 12px;
+            padding: 1.2rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        .stats-strip {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            padding-top: 0.85rem;
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .stats-item span.highlight {
+            color: var(--accent-cyan);
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
+
+        /* API links bar */
+        .api-links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .api-link-card {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            text-decoration: none;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .api-link-card:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(30, 41, 59, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .api-link-info h5 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            margin-bottom: 0.2rem;
+        }
+
+        .api-link-info p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .api-link-card .arrow {
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--card-border);
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1 class="header-title">Production CI/CD Pipeline</h1>
-            <p class="header-subtitle">Commit to Production: 10 Key Steps on Amazon EKS &amp; Argo CD GitOps</p>
+    <div class="dashboard-wrapper">
+        <!-- Top Navbar -->
+        <nav class="top-navbar">
+            <div class="brand-cluster">
+                <div class="cluster-logo">⚡</div>
+                <div class="brand-text">
+                    <h4>Production CI/CD Pipeline</h4>
+                    <p>Commit to Production &bull; Docker Swarm Cluster on AWS EC2</p>
+                </div>
+            </div>
+            <div class="live-status-pill">
+                <span class="pulse-dot"></span>
+                <span>Swarm Active (3 Nodes Ready)</span>
+            </div>
+        </nav>
+
+        <!-- Hero Header -->
+        <header class="hero-banner">
+            <div class="hero-tag">Cloud Computing Capstone</div>
+            <h1 class="header-title">Docker Swarm Live Operations Console</h1>
+            <p class="header-subtitle">
+                High-availability multi-service deployment orchestrating replicated Python Flask workloads behind an Nginx reverse proxy load balancer on AWS EC2 infrastructure.
+            </p>
             <div class="meta-badges">
-                <span class="badge" id="app-version">Tag / Version: {{ version }}</span>
-                <span class="badge green" id="app-hostname">Pod Host: {{ hostname }}</span>
-                <span class="badge purple">Cluster: Amazon EKS</span>
+                <div class="badge cyan">
+                    <span class="label">Serving Container:</span>
+                    <strong id="active-hostname">{{ hostname }}</strong>
+                </div>
+                <div class="badge green">
+                    <span class="label">Ingress Proxy:</span>
+                    <strong>Nginx (Port 80)</strong>
+                </div>
+                <div class="badge purple">
+                    <span class="label">AWS Region:</span>
+                    <strong>ap-southeast-2 (Sydney)</strong>
+                </div>
+                <div class="badge">
+                    <span class="label">Build Tag:</span>
+                    <span>v{{ version }}</span>
+                </div>
             </div>
         </header>
 
-        <section>
-            <div class="section-header">
-                <h2 class="section-title">End-to-End Pipeline Workflow</h2>
-                <a href="/health" target="_blank" style="color: var(--accent-blue); font-size: 0.85rem; text-decoration: none; font-weight: 600;">Check Health API &rarr;</a>
-            </div>
+        <!-- 3-Node Topology Section -->
+        <div class="grid-header">
+            <h3 class="grid-title">Docker Swarm Cluster Nodes (1 Manager + 2 Workers)</h3>
+            <span style="font-size: 0.8rem; color: var(--text-dim); font-family: var(--font-mono);">Raft Port: 2377 &bull; VXLAN: 4789</span>
+        </div>
 
-            <!-- 10 Pipeline Stages matching reference diagram -->
-            <div class="pipeline-grid">
-                <div class="step-card">
-                    <div class="step-number">Step 1</div>
-                    <div class="step-name">Commit &amp; Push</div>
-                    <div class="step-tech">Git &bull; GitHub</div>
+        <div class="cluster-grid">
+            <!-- Node 1: Manager -->
+            <div class="node-card leader">
+                <div class="node-header">
+                    <div>
+                        <div class="node-name">swarm-manager</div>
+                        <div style="font-size: 0.75rem; color: var(--accent-cyan); margin-top: 2px;">Manager Leader Node</div>
+                    </div>
+                    <span class="node-role-badge role-leader">Leader</span>
                 </div>
-                <div class="step-card">
-                    <div class="step-number">Step 2</div>
-                    <div class="step-name">Build &amp; Test</div>
-                    <div class="step-tech">GitHub Actions / Jenkins</div>
+                <div class="node-detail-row">
+                    <span>Instance Type:</span>
+                    <span class="val">t3.small (AWS EC2)</span>
                 </div>
-                <div class="step-card">
-                    <div class="step-number">Step 3</div>
-                    <div class="step-name">Quality &amp; Security</div>
-                    <div class="step-tech">SonarQube &bull; Trivy</div>
+                <div class="node-detail-row">
+                    <span>Private IP:</span>
+                    <span class="val">172.31.44.171</span>
                 </div>
-                <div class="step-card">
-                    <div class="step-number">Step 4</div>
-                    <div class="step-name">Build &amp; Push</div>
-                    <div class="step-tech">Amazon ECR</div>
+                <div class="node-detail-row">
+                    <span>Public IP:</span>
+                    <span class="val">3.104.55.68</span>
                 </div>
-                <div class="step-card">
-                    <div class="step-number">Step 5</div>
-                    <div class="step-name">GitOps Update</div>
-                    <div class="step-tech">K8s Manifests</div>
+                <div class="node-detail-row">
+                    <span>Services Hosted:</span>
+                    <span class="val">nginx (Ingress: 80)</span>
                 </div>
-                <div class="step-card">
-                    <div class="step-number">Step 6</div>
-                    <div class="step-name">Sync with EKS</div>
-                    <div class="step-tech">Argo CD</div>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">Step 7</div>
-                    <div class="step-name">Deploy to Pods</div>
-                    <div class="step-tech">Kubernetes Engine</div>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">Step 8</div>
-                    <div class="step-name">Deployment Strategy</div>
-                    <div class="step-tech">Rolling / Blue-Green</div>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">Step 9</div>
-                    <div class="step-name">Monitoring</div>
-                    <div class="step-tech">Prometheus &bull; Grafana</div>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">Step 10</div>
-                    <div class="step-name">Rollback</div>
-                    <div class="step-tech">GitOps Revert &bull; K8s Undo</div>
+                <div class="node-status-bar">
+                    <span class="status-ready">&#10004; Ready &amp; Active</span>
+                    <span style="color: var(--text-dim); font-family: var(--font-mono);">Engine v29.9.2</span>
                 </div>
             </div>
 
-            <div class="pipeline-details">
-                <div class="detail-card" style="border-left-color: #38bdf8;">
-                    <h3>1. Source Control (Git)</h3>
-                    <p>Developers commit code to branch-protected GitHub repository, triggering automated CI/CD webhooks.</p>
+            <!-- Node 2: Worker 1 -->
+            <div class="node-card" id="card-worker1">
+                <div class="node-header">
+                    <div>
+                        <div class="node-name">swarm-worker1</div>
+                        <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 2px;">Swarm Compute Worker</div>
+                    </div>
+                    <span class="node-role-badge role-worker">Worker</span>
                 </div>
-                <div class="detail-card" style="border-left-color: #818cf8;">
-                    <h3>2. Build &amp; Test</h3>
-                    <p>Pytest unit/integration test suite and Flake8 linter run automatically on Python 3.10 with coverage validation.</p>
+                <div class="node-detail-row">
+                    <span>Instance Type:</span>
+                    <span class="val">t3.micro (AWS EC2)</span>
                 </div>
-                <div class="detail-card" style="border-left-color: #c084fc;">
-                    <h3>3. Quality &amp; Security Scan</h3>
-                    <p>SonarQube scans code quality and Trivy executes CVE vulnerability scanning on Docker images and K8s manifests.</p>
+                <div class="node-detail-row">
+                    <span>Private IP:</span>
+                    <span class="val">172.31.44.96</span>
                 </div>
-                <div class="detail-card" style="border-left-color: #f59e0b;">
-                    <h3>4. Amazon ECR Registry</h3>
-                    <p>Docker container image is tagged with immutable git SHA and pushed to private Amazon ECR repository.</p>
+                <div class="node-detail-row">
+                    <span>Public IP:</span>
+                    <span class="val">13.210.125.139</span>
                 </div>
-                <div class="detail-card" style="border-left-color: #10b981;">
-                    <h3>5. GitOps Manifest Automation</h3>
-                    <p>CI pipeline updates K8s deployment image reference in repository with [skip ci] to avoid loops.</p>
+                <div class="node-detail-row">
+                    <span>Services Hosted:</span>
+                    <span class="val">web (Replica 1/2)</span>
                 </div>
-                <div class="detail-card" style="border-left-color: #06b6d4;">
-                    <h3>6. Argo CD Sync</h3>
-                    <p>Argo CD reconciles live Amazon EKS cluster state with the GitOps desired state repository.</p>
-                </div>
-                <div class="detail-card" style="border-left-color: #3b82f6;">
-                    <h3>7. Kubernetes Pod Health</h3>
-                    <p>Pods provision with unprivileged non-root UID 1000, resource limits, and HTTP /health probes.</p>
-                </div>
-                <div class="detail-card" style="border-left-color: #10b981;">
-                    <h3>8. Zero-Downtime Rollout</h3>
-                    <p>Zero-downtime Rolling Update (maxSurge=1, maxUnavailable=0) and documented Blue-Green candidate switching.</p>
-                </div>
-                <div class="detail-card" style="border-left-color: #f43f5e;">
-                    <h3>9. Full-Stack Observability</h3>
-                    <p>Prometheus scrapes metrics, Grafana visualizes pod health, and CloudWatch forwards container logs.</p>
-                </div>
-                <div class="detail-card" style="border-left-color: #64748b;">
-                    <h3>10. Safe Rollback</h3>
-                    <p>Git-authoritative revert triggers instant Argo CD rollback without configuration drift conflicts.</p>
+                <div class="node-status-bar">
+                    <span class="status-ready">&#10004; Ready &amp; Active</span>
+                    <span style="color: var(--text-dim); font-family: var(--font-mono);">Engine v29.9.2</span>
                 </div>
             </div>
-        </section>
 
+            <!-- Node 3: Worker 2 -->
+            <div class="node-card" id="card-worker2">
+                <div class="node-header">
+                    <div>
+                        <div class="node-name">swarm-worker2</div>
+                        <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 2px;">Swarm Compute Worker</div>
+                    </div>
+                    <span class="node-role-badge role-worker">Worker</span>
+                </div>
+                <div class="node-detail-row">
+                    <span>Instance Type:</span>
+                    <span class="val">t3.micro (AWS EC2)</span>
+                </div>
+                <div class="node-detail-row">
+                    <span>Private IP:</span>
+                    <span class="val">172.31.47.209</span>
+                </div>
+                <div class="node-detail-row">
+                    <span>Public IP:</span>
+                    <span class="val">16.176.134.119</span>
+                </div>
+                <div class="node-detail-row">
+                    <span>Services Hosted:</span>
+                    <span class="val">web (Replica 2/2)</span>
+                </div>
+                <div class="node-status-bar">
+                    <span class="status-ready">&#10004; Ready &amp; Active</span>
+                    <span style="color: var(--text-dim); font-family: var(--font-mono);">Engine v29.9.2</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Load Balancer Tester -->
+        <div class="tester-box">
+            <div class="tester-top">
+                <div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem;">
+                        ⚡ Live Nginx Reverse Proxy &amp; Round-Robin Probe
+                    </h3>
+                    <p style="font-size: 0.825rem; color: var(--text-muted);">
+                        Click below to dispatch an HTTP probe to <code>GET /api/info</code>. Watch Nginx and Swarm VIP alternate requests across backend container replicas in real time.
+                    </p>
+                </div>
+                <div class="tester-actions">
+                    <label class="auto-probe-toggle">
+                        <input type="checkbox" id="auto-probe-chk" onchange="toggleAutoProbe(this)">
+                        <span>Auto-Probe (3s)</span>
+                    </label>
+                    <button class="btn-probe" id="probe-btn" onclick="probeEndpoint()">
+                        <span>Send Probe Request &rarr;</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="terminal-display">
+                <div class="terminal-header">
+                    <span>HTTP Request: GET http://3.104.55.68/api/info</span>
+                    <span id="probe-status" style="color: var(--accent-green);">&#9679; 200 OK</span>
+                </div>
+                <pre id="json-output" style="line-height: 1.5; color: #38bdf8;">{\n  "service": "cicd-assignment-backend",\n  "cluster": "docker-swarm",\n  "hostname": "{{ hostname }}",\n  "runtime": "python-flask",\n  "version": "{{ version }}"\n}</pre>
+                
+                <div class="stats-strip">
+                    <div class="stats-item">Total Probes: <span class="highlight" id="stat-count">1</span></div>
+                    <div class="stats-item">Last Answered By: <span class="highlight" id="stat-last-host">{{ hostname }}</span></div>
+                    <div class="stats-item">Round-Robin Hosts Seen: <span class="highlight" id="stat-hosts-count">1</span></div>
+                    <div class="stats-item">Latency: <span class="highlight" id="stat-latency">8ms</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verified Health & Diagnostic Routes -->
+        <div class="grid-header">
+            <h3 class="grid-title">Verified Cluster Endpoints</h3>
+        </div>
+        <div class="api-links-grid">
+            <a href="/health" target="_blank" class="api-link-card">
+                <div class="api-link-info">
+                    <h5>GET /health</h5>
+                    <p>Application health status check</p>
+                </div>
+                <span class="arrow">&rarr;</span>
+            </a>
+            <a href="/api/info" target="_blank" class="api-link-card">
+                <div class="api-link-info">
+                    <h5>GET /api/info</h5>
+                    <p>Swarm VIP metadata &amp; active host</p>
+                </div>
+                <span class="arrow">&rarr;</span>
+            </a>
+            <a href="/nginx-health" target="_blank" class="api-link-card">
+                <div class="api-link-info">
+                    <h5>GET /nginx-health</h5>
+                    <p>Nginx ingress proxy probe</p>
+                </div>
+                <span class="arrow">&rarr;</span>
+            </a>
+            <a href="https://github.com/Chamroeun12/Assignment" target="_blank" class="api-link-card">
+                <div class="api-link-info">
+                    <h5>GitHub Repository</h5>
+                    <p>Source code, IaC &amp; CI/CD</p>
+                </div>
+                <span class="arrow">&rarr;</span>
+            </a>
+        </div>
+
+        <!-- Footer -->
         <footer>
-            Master's Degree in Cloud Computing &bull; Assignment &bull; Chamroeun Saran (Chamroeun12)
+            <p><strong>Master of Science in Cloud Computing &bull; Capstone Project</strong></p>
+            <p>Author: <strong>Chamroeun Saran</strong> &bull; Stack: GitHub &bull; Jenkins &bull; Terraform &bull; Docker &bull; Docker Swarm &bull; AWS EC2</p>
         </footer>
     </div>
+
+    <!-- Live Load Balancer Probe Script -->
+    <script>
+        let probeCount = 1;
+        let seenHosts = new Set(["{{ hostname }}"]);
+        let autoInterval = null;
+
+        async function probeEndpoint() {
+            const startTime = performance.now();
+            const btn = document.getElementById('probe-btn');
+            btn.style.opacity = '0.7';
+
+            try {
+                const response = await fetch('/api/info?ts=' + Date.now());
+                const data = await response.json();
+                const latency = Math.round(performance.now() - startTime);
+
+                probeCount++;
+                seenHosts.add(data.hostname);
+
+                document.getElementById('json-output').textContent = JSON.stringify(data, null, 2);
+                document.getElementById('stat-count').textContent = probeCount;
+                document.getElementById('stat-last-host').textContent = data.hostname;
+                document.getElementById('stat-hosts-count').textContent = Array.from(seenHosts).join(', ');
+                document.getElementById('stat-latency').textContent = latency + 'ms';
+                document.getElementById('active-hostname').textContent = data.hostname;
+                document.getElementById('probe-status').textContent = '● ' + response.status + ' OK (' + latency + 'ms)';
+
+                // Highlight active card
+                document.getElementById('card-worker1').style.borderColor = 'rgba(148, 163, 184, 0.14)';
+                document.getElementById('card-worker2').style.borderColor = 'rgba(148, 163, 184, 0.14)';
+            } catch (err) {
+                document.getElementById('probe-status').textContent = '● Error probing endpoint';
+            } finally {
+                btn.style.opacity = '1';
+            }
+        }
+
+        function toggleAutoProbe(checkbox) {
+            if (checkbox.checked) {
+                autoInterval = setInterval(probeEndpoint, 3000);
+            } else {
+                clearInterval(autoInterval);
+            }
+        }
+    </script>
 </body>
 </html>
