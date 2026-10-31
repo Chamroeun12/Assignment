@@ -136,7 +136,7 @@ pipeline {
                         docker stack ps ${STACK_NAME}
                         docker service ls
                     else
-                        echo "==> [NOTICE] Swarm cluster is remote on AWS EC2 (3.104.55.68); verified docker-stack.yml manifest syntax."
+                        echo "==> [NOTICE] Swarm cluster is remote on AWS EC2 (16.178.178.44); verified docker-stack.yml manifest syntax."
                         cat docker-stack.yml | grep -E "services|image|replicas|nginx" || true
                     fi
                 '''

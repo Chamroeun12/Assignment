@@ -86,3 +86,6 @@ ehthumbs.db
 *.png
 !screenshots/*.png
 *.mp4
+
+*.tar.gz
+jenkins_backup.tar.gz

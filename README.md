@@ -13,8 +13,8 @@
 **Repository:** [https://github.com/Chamroeun12/Assignment](https://github.com/Chamroeun12/Assignment)  
 **Target AWS Region:** Sydney (`ap-southeast-2`)  
 **Amazon ECR Registry:** `399311815210.dkr.ecr.ap-southeast-2.amazonaws.com/cicd-assignment`  
-**Live Manager Public IP:** `3.104.55.68`  
-**Live Application URL:** [http://3.104.55.68/](http://3.104.55.68/)  
+**Live Manager Public IP:** `16.178.178.44`  
+**Live Application URL:** [http://16.178.178.44/](http://16.178.178.44/)  
 **Rubric Evaluation:** Meets 100/100 Points Base + 5 Bonus Points (Telegram CI/CD Notifications)  
 
 ---
@@ -198,16 +198,16 @@ terraform plan
 terraform apply -auto-approve
 ```
 **Terraform Outputs Generated:**
-- `manager_public_ip`: `3.104.55.68` (Public IP of the Swarm Manager)
-- `worker_public_ips`: `["13.210.125.139", "16.176.134.119"]` (Public IPs of Swarm Workers)
-- `application_url`: `http://3.104.55.68`
-- `application_health_url`: `http://3.104.55.68/health`
+- `manager_public_ip`: `16.178.178.44` (Public IP of the Swarm Manager)
+- `worker_public_ips`: `["3.107.55.229", "3.27.26.70"]` (Public IPs of Swarm Workers)
+- `application_url`: `http://16.178.178.44`
+- `application_health_url`: `http://16.178.178.44/health`
 - `cluster_topology_summary`: `1 Manager (Leader: swarm-manager) + 2 Workers (swarm-worker1, swarm-worker2) with Nginx Load Balancer`
 
 ### Step 4.4: Docker Swarm Cluster Verification
 SSH into the Swarm Manager to verify all 3 nodes are active and ready:
 ```bash
-ssh -i chamroeunsaran.pem ubuntu@3.104.55.68
+ssh -i chamroeunsaran.pem ubuntu@16.178.178.44
 
 # Verify cluster nodes (1 Manager + 2 Workers)
 docker node ls
@@ -249,16 +249,16 @@ fhba84he9rso   cicd-assignment_nginx   replicated   1/1        nginx:alpine     
 Test each public route exposed by the Nginx reverse proxy:
 ```bash
 # 1. Main Application Web Interface
-curl -i http://3.104.55.68/
+curl -i http://16.178.178.44/
 
 # 2. Application Healthcheck Endpoint
-curl -s http://3.104.55.68/health
+curl -s http://16.178.178.44/health
 
 # 3. Backend Service API Route
-curl -s http://3.104.55.68/api/info
+curl -s http://16.178.178.44/api/info
 
 # 4. Nginx Load Balancer Health
-curl -s http://3.104.55.68/nginx-health
+curl -s http://16.178.178.44/nginx-health
 ```
 
 ### Step 4.8: Zero-Downtime Rolling Update Demonstration

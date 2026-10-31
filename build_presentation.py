@@ -125,7 +125,7 @@ def create_presentation():
     p_m2.font.color.rgb = TEXT_MUTED
 
     p_m3 = tf_m.add_paragraph()
-    p_m3.text = "Verification: Jenkins Pipeline #4 Passed  |  Live Cluster IP: 3.104.55.68  |  October 2026"
+    p_m3.text = "Verification: Jenkins Pipeline #4 Passed  |  Live Cluster IP: 16.178.178.44  |  October 2026"
     p_m3.font.name = "Segoe UI"
     p_m3.font.size = Pt(11)
     p_m3.font.bold = True
@@ -606,14 +606,14 @@ def create_presentation():
 
     demo_steps = [
         ("Step 1: Live Web Application", [
-            "Open browser: http://3.104.55.68",
+            "Open browser: http://16.178.178.44",
             "Demonstrates Nginx reverse proxy serving the full interactive dashboard on Port 80.",
             "Verify real-time container hostname and system statistics."
         ]),
         ("Step 2: HTTP Endpoint Curl Verification", [
-            "curl -s http://3.104.55.68/health  -> Returns {\"status\": \"healthy\", \"version\": \"1.0.0\"}",
-            "curl -s http://3.104.55.68/api/info -> Demonstrates round-robin hostname switching across replicas",
-            "curl -s http://3.104.55.68/nginx-health -> Confirms load balancer routing integrity"
+            "curl -s http://16.178.178.44/health  -> Returns {\"status\": \"healthy\", \"version\": \"1.0.0\"}",
+            "curl -s http://16.178.178.44/api/info -> Demonstrates round-robin hostname switching across replicas",
+            "curl -s http://16.178.178.44/nginx-health -> Confirms load balancer routing integrity"
         ]),
         ("Step 3: Jenkins CI/CD Automation", [
             "Open Jenkins: http://localhost:8080/job/Assignment-CI-CD/",
@@ -621,7 +621,7 @@ def create_presentation():
             "Inspect console output confirming Pytest (5/5 passed, 89% cov) and Flake8 (0 errors)."
         ]),
         ("Step 4: Docker Swarm Cluster via SSH", [
-            "ssh -i chamroeunsaran.pem ubuntu@3.104.55.68",
+            "ssh -i chamroeunsaran.pem ubuntu@16.178.178.44",
             "Run 'sudo docker service ls' to demonstrate 2/2 backend and 1/1 nginx replicas.",
             "Run 'sudo docker stack ps cicd-assignment' showing distributed tasks across cluster nodes."
         ])
