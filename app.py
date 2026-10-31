@@ -13,7 +13,7 @@ def index():
     hostname = socket.gethostname()
     return render_template(
         "index.html",
-        title="CI/CD Homework 2",
+        title="CI/CD Assignment",
         version=APP_VERSION,
         hostname=hostname
     )
