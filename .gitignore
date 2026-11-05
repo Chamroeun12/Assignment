@@ -83,6 +83,8 @@ ehthumbs.db
 # Assignment deliverables
 *.pdf
 !REPORT.pdf
+!HOW_TO_RUN_EN.pdf
+!HOW_TO_RUN_KH.pdf
 *.png
 !screenshots/*.png
 *.mp4

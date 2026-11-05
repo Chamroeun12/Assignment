@@ -2,6 +2,10 @@
 
 > Complete, step-by-step developer and operator guide for running this project locally with Docker Compose or deploying to production on AWS EC2 with Terraform and Docker Swarm.
 
+> 📥 **Download Printable PDF Guides:**
+> - 🇬🇧 **English PDF Runbook:** [HOW_TO_RUN_EN.pdf](HOW_TO_RUN_EN.pdf)
+> - 🇰🇭 **Khmer PDF Step-by-Step Guide (ជាភាសាខ្មែរ):** [HOW_TO_RUN_KH.pdf](HOW_TO_RUN_KH.pdf)
+
 ---
 
 ## 📑 Table of Contents
@@ -372,3 +376,4 @@ Docker Swarm will start new containers and verify healthchecks before stopping o
 - **Degree:** Master of Science in Cloud Computing
 - **Repository:** [https://github.com/Chamroeun12/Assignment](https://github.com/Chamroeun12/Assignment)
 - **License:** MIT License
+
