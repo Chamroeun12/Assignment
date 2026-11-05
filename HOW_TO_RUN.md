@@ -2,9 +2,9 @@
 
 > Complete, step-by-step developer and operator guide for running this project locally with Docker Compose or deploying to production on AWS EC2 with Terraform and Docker Swarm.
 
-> 📥 **Download Printable PDF Guides:**
-> - 🇬🇧 **English PDF Runbook:** [HOW_TO_RUN_EN.pdf](HOW_TO_RUN_EN.pdf)
-> - 🇰🇭 **Khmer PDF Step-by-Step Guide (ជាភាសាខ្មែរ):** [HOW_TO_RUN_KH.pdf](HOW_TO_RUN_KH.pdf)
+> 📥 **Download Printable Guides (Word DOCX & PDF):**
+> - 🇰🇭 **Khmer Step-by-Step Guide (ជាភាសាខ្មែរ):** [HOW_TO_RUN_KH.docx (Word)](HOW_TO_RUN_KH.docx) | [HOW_TO_RUN_KH.pdf (PDF)](HOW_TO_RUN_KH.pdf)
+> - 🇬🇧 **English Technical Runbook:** [HOW_TO_RUN_EN.docx (Word)](HOW_TO_RUN_EN.docx) | [HOW_TO_RUN_EN.pdf (PDF)](HOW_TO_RUN_EN.pdf)
 
 ---
 
