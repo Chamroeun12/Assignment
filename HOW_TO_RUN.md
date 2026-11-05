@@ -4,6 +4,7 @@
 
 > 📥 **Download Printable Guides (Word DOCX & PDF):**
 > - 🇰🇭 **Khmer Step-by-Step Guide (ជាភាសាខ្មែរ):** [HOW_TO_RUN_KH.docx (Word)](HOW_TO_RUN_KH.docx) | [HOW_TO_RUN_KH.pdf (PDF)](HOW_TO_RUN_KH.pdf)
+> - 📊 **Khmer Presentation Deck (ស្លាយបទបង្ហាញជាភាសាខ្មែរ):** [HOW_TO_RUN_KH.pptx (PowerPoint)](HOW_TO_RUN_KH.pptx)
 > - 🇬🇧 **English Technical Runbook:** [HOW_TO_RUN_EN.docx (Word)](HOW_TO_RUN_EN.docx) | [HOW_TO_RUN_EN.pdf (PDF)](HOW_TO_RUN_EN.pdf)
 
 ---

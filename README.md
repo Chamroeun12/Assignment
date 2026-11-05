@@ -16,7 +16,7 @@
 **Live Manager Public IP:** `16.178.206.23`  
 **Live Application URL:** [http://16.178.206.23/](http://16.178.206.23/)  
 **Rubric Evaluation:** Meets 100/100 Points Base + 5 Bonus Points (Telegram CI/CD Notifications)  
-**Quickstart & Runbook:** 👉 [**HOW_TO_RUN.md**](HOW_TO_RUN.md) | 🇬🇧 [**HOW_TO_RUN_EN.pdf**](HOW_TO_RUN_EN.pdf) | 🇰🇭 [**HOW_TO_RUN_KH.pdf (ភាសាខ្មែរ)**](HOW_TO_RUN_KH.pdf)  
+**Quickstart & Runbook:** 👉 [**HOW_TO_RUN.md**](HOW_TO_RUN.md) | 🇬🇧 [**HOW_TO_RUN_EN.pdf**](HOW_TO_RUN_EN.pdf) | 🇰🇭 [**HOW_TO_RUN_KH.pdf (ភាសាខ្មែរ)**](HOW_TO_RUN_KH.pdf) | 📊 [**HOW_TO_RUN_KH.pptx (ស្លាយបទបង្ហាញ)**](HOW_TO_RUN_KH.pptx)  
 
 ---
 

@@ -92,3 +92,5 @@ ehthumbs.db
 *.tar.gz
 jenkins_backup.tar.gz
 ~$*
+
+scratch/
